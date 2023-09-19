@@ -55,16 +55,10 @@ void Print_CS(CS cs)
 }
 int main()
 {
-	vector <truba> properties_truba;
-	vector <CS> properties_CS;
 	//Труба
-	size_t t = 1;
-	properties_truba.resize(t);
 	truba tr1 = Input_truba();
 	Print_truba(tr1);
 	//КС
-	size_t c = 1;
-	properties_CS.resize(c);
 	CS cs1 = Input_CS();
 	Print_CS(cs1);
 	return 0;
