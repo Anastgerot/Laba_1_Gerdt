@@ -25,12 +25,16 @@ truba Input_truba()
 	cin >> tr.sostoyanie;
 	return tr;
 }
-void Print_truba(truba tr)
+void Print_truba(const truba& tr)
 {
 	cout << "Otmetka: " << tr.otmetka << endl
 		<< "Dlina: " << tr.dlina << endl
 		<< "Diametr: " << tr.diametr << endl
 		<< "Sostoyanie: " << tr.sostoyanie << endl;
+}
+void Edittruba(truba& tr)
+{
+	tr.sostoyanie;
 }
 CS Input_CS()
 {
@@ -45,7 +49,7 @@ CS Input_CS()
 	cin >> cs.efficiency;
 	return cs;
 }
-void Print_CS(CS cs)
+void Print_CS(const CS& cs)
 {
 	cout << "Name: " << cs.name << endl
 		<< "Kolichestvo cekhov: " << cs.just_cekh << endl
@@ -55,10 +59,53 @@ void Print_CS(CS cs)
 int main()
 {
 	//Труба
-	truba tr1 = Input_truba();
-	Print_truba(tr1);
-	//КС
-	CS cs1 = Input_CS();
-	Print_CS(cs1);
+	truba tr1;
+	CS cs1;
+
+	int input;
+
+	cout << "Viborite cifru:\n";
+	cout << "1. Dobavte trubu\n";
+	cout << "2. Dobavte KC\n";
+	cout << "3. Prosmotr vsex obectov\n";
+	cout << "4. Redactirovat trubu\n";
+	cout << "5. Redactirovat KC\n";
+	cout << "6. Coxranit\n";
+	cout << "7. Zagruzit\n";
+	cout << "0. Vixod\n";
+	cout << "Selection: ";
+	cin >> input;
+	switch (input) {
+		case 1:
+			tr1 = Input_truba();
+			break;
+		case 2:
+			cs1 = Input_CS();
+			break;
+		case 3:
+			cout << "Truba:\n";
+			Print_truba(tr1);
+			cout << "KC:\n";
+			Print_CS(cs1);
+			break;
+		case 4:
+			Edittruba(tr1);
+			break;
+		case 5:
+			;
+			break;
+		case 6:
+			;
+			break;
+		case 7:
+			;
+			break;
+		case 0:
+			break;
+		default:
+			cout << "Error, bad input, quitting\n";
+			break;
+	}
+
 	return 0;
 }
