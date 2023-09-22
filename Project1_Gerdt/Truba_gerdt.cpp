@@ -78,7 +78,8 @@ void Print_truba(const truba& tr)
 }
 void Edit_truba(truba& tr)
 {
-	tr.under_repair;
+	tr.under_repair = !tr.under_repair;
+	cout << "The status has been successfully changed "<< endl;
 }
 CS Input_CS()
 {
@@ -111,6 +112,28 @@ void Print_CS(const CS& cs)
 		<< "The number of workshops in operation: " << cs.workshop_on << endl
 		<< "Efficiency: " << cs.efficiency << endl;
 }
+void Edit_CS(CS& cs)
+{
+	cout << "Type name: ";
+	cin >> cs.name;
+	cout << "Type the number of workshops: ";
+	Checking_int(cs.workshop);
+	cout << "Type the number of workshops in operation: ";
+	Checking_int(cs.workshop_on);
+	while (cs.workshop < cs.workshop_on)
+	{
+		cout << "The number of workshops v can't be less then the number of workshops in operation\n";
+		cout << "Please, try again: ";
+		Checking_int(cs.workshop_on);
+	}
+	cout << "Type efficiency (From A to D): ";
+	cin >> cs.efficiency;
+	while (!(cs.efficiency == 'A' || cs.efficiency == 'B' || cs.efficiency == 'C' || cs.efficiency == 'D'))
+	{
+		cout << "Please, enter available indicator (From A to D): ";
+		cin >> cs.efficiency;
+	}
+}
 int main()
 {
 	truba tr1;
@@ -125,7 +148,7 @@ int main()
 		cout << "1. Add the pipe\n";
 		cout << "2. Add the compressor station\n";
 		cout << "3. View all objects\n";
-		cout << "4. Edit the pipe\n";
+		cout << "4. Edit the status 'under repair'\n";
 		cout << "5. Edit the compressor station\n";
 		cout << "6. Save\n";
 		cout << "7. Download\n";
@@ -147,19 +170,19 @@ int main()
 			{
 				cout << "You don't have any objects" << endl << "Please, enter your data and try again later!" << endl;
 			}
-			if (check_case1 == 1 && check_case2 == 0)
+			else if (check_case1 == 1 && check_case2 == 0)
 			{
 				cout << "Pipe:\n";
 				Print_truba(tr1);
 				cout << "You don't have the compressor station\n";
 			}
-			if (check_case1 == 0 && check_case2 == 1)
+			else if (check_case1 == 0 && check_case2 == 1)
 			{
 				cout << "Compressor station:\n";
 				Print_CS(cs1);
 				cout << "You don't have the pipe\n";
 			}
-			if (check_case1 == 1 && check_case2 == 1)
+			else if (check_case1 == 1 && check_case2 == 1)
 			{
 				cout << "Pipe:\n";
 				Print_truba(tr1);
@@ -168,10 +191,24 @@ int main()
 			}
 			break;
 		case 4:
+			if (check_case1 == 0)
+			{
+				cout << "You have no status to change it" << endl << "Please, enter your data and try again later!" << endl;
+			}
+			else
+			{
 			Edit_truba(tr1);
+			}
 			break;
 		case 5:
-			;
+			if (check_case2 == 0)
+			{
+				cout << "You have no status to change it" << endl << "Please, enter your data and try again later!" << endl;
+			}
+			else
+			{
+				Edit_CS(cs1);
+			}
 			break;
 		case 6:
 			;
