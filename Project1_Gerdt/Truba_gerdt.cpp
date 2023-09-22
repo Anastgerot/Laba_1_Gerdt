@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 using namespace std;
 struct truba {
 	string name;
@@ -81,6 +82,29 @@ void Edit_truba(truba& tr)
 	tr.under_repair = !tr.under_repair;
 	cout << "The status has been successfully changed "<< endl;
 }
+void Save_truba(const truba& tr)
+{
+	ofstream fout;
+	fout.open("pipe.txt", ios::out);
+	if (fout.is_open())
+	{
+		fout << tr.name << endl << tr.length << endl << tr.diameter << endl << tr.under_repair << endl;
+		fout.close();
+	}
+}
+truba Download_truba()
+{
+	truba tr;
+	ifstream fin;
+	fin.open("pipe.txt", ios::in);
+	if (fin.is_open())
+	{
+		fin >> tr.name >> tr.length >> tr.diameter >> tr.under_repair;
+		fin.close();
+	}
+	return tr;
+}
+//สั
 CS Input_CS()
 {
 	CS cs;
@@ -92,7 +116,7 @@ CS Input_CS()
 	Checking_int(cs.workshop_on);
 	while (cs.workshop < cs.workshop_on)
 	{
-		cout << "The number of workshops v can't be less then the number of workshops in operation\n";
+		cout << "The number of workshops can't be less then the number of workshops in operation\n";
 		cout << "Please, try again: ";
 		Checking_int(cs.workshop_on);
 	}
@@ -122,7 +146,7 @@ void Edit_CS(CS& cs)
 	Checking_int(cs.workshop_on);
 	while (cs.workshop < cs.workshop_on)
 	{
-		cout << "The number of workshops v can't be less then the number of workshops in operation\n";
+		cout << "The number of workshops can't be less then the number of workshops in operation\n";
 		cout << "Please, try again: ";
 		Checking_int(cs.workshop_on);
 	}
@@ -133,6 +157,29 @@ void Edit_CS(CS& cs)
 		cout << "Please, enter available indicator (From A to D): ";
 		cin >> cs.efficiency;
 	}
+}
+void Save_CS(const CS& cs)
+{
+	ofstream fout;
+	fout.open("CS.txt", ios::out);
+	if (fout.is_open())
+	{
+		fout << cs.name << endl << cs.workshop << endl << cs.workshop_on << endl << cs.efficiency << endl;
+		fout.close();
+	}
+
+}
+CS Download_CS()
+{
+	CS cs;
+	ifstream fin;
+	fin.open("CS.txt", ios::in);
+	if (fin.is_open())
+	{
+		fin >> cs.name >> cs.workshop >> cs.workshop_on >> cs.efficiency;
+		fin.close();
+	}
+	return cs;
 }
 int main()
 {
@@ -197,13 +244,13 @@ int main()
 			}
 			else
 			{
-			Edit_truba(tr1);
+				Edit_truba(tr1);
 			}
 			break;
 		case 5:
 			if (check_case2 == 0)
 			{
-				cout << "You have no status to change it" << endl << "Please, enter your data and try again later!" << endl;
+				cout << "You have no compressor station to change it" << endl << "Please, enter your data and try again later!" << endl;
 			}
 			else
 			{
@@ -211,10 +258,35 @@ int main()
 			}
 			break;
 		case 6:
-			;
+			if (check_case1 == 0 && check_case2 == 0)
+			{
+				cout << "You don't have any objects to save" << endl << "Please, enter your data and try again later!" << endl;
+			}
+			else if (check_case1 == 1 && check_case2 == 0)
+			{
+				cout << "Pipe successfully saved!" << " " << "Please, check your file" << endl;
+				Save_truba(tr1);
+				cout << "You don't have the compressor station to save\n";
+			}
+			else if (check_case1 == 0 && check_case2 == 1)
+			{
+				cout << "Compressor station successfully saved!" << " " << "Please, check your file" << endl;
+				Save_CS(cs1);
+				cout << "You don't have the pipe to save\n";
+			}
+			else if (check_case1 == 1 && check_case2 == 1)
+			{
+				Save_truba(tr1);
+				Save_CS(cs1);
+			}
+			break;
+	
 			break;
 		case 7:
-			;
+			cout << "Pipe:\n";
+			Print_truba(Download_truba());
+			cout << "Compressor station:\n";
+			Print_CS(Download_CS());
 			break;
 		case 0:
 			return 0;
