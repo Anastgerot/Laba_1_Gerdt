@@ -203,6 +203,8 @@ int main()
 		cout << "Selection: ";
 		int input;
 		Checking_exit(input);
+		fstream cs_file("CS.txt");
+		fstream pipe_file("pipe.txt");
 		switch (input) {
 		case 1:
 			tr1 = Input_truba();
@@ -283,10 +285,26 @@ int main()
 	
 			break;
 		case 7:
-			cout << "Pipe:\n";
-			Print_truba(Download_truba());
-			cout << "Compressor station:\n";
-			Print_CS(Download_CS());
+			if (pipe_file.peek() == EOF)
+			{
+				cout << "File is empty!" << " " << "Please, check your data about your pipe!!!" << endl;
+				pipe_file.close();
+			}
+			else
+			{
+				cout << "Pipe:\n";
+				Print_truba(Download_truba());
+			}
+			if (cs_file.peek() == EOF)
+			{
+				cout << "File is empty!" << " " << "Please, check your data about your compressor station!!!" << endl;
+				cs_file.close();
+			}
+			else
+			{
+				cout << "Compressor station:\n";
+				Print_CS(Download_CS());
+			}
 			break;
 		case 0:
 			return 0;
