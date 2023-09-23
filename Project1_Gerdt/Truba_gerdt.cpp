@@ -80,7 +80,7 @@ void Print_truba(const truba& tr)
 void Edit_truba(truba& tr)
 {
 	tr.under_repair = !tr.under_repair;
-	cout << "The status has been successfully changed "<< endl;
+	cout << "The status has been successfully changed. "<< endl;
 }
 void Save_truba(const truba& tr)
 {
@@ -116,7 +116,7 @@ CS Input_CS()
 	Checking_int(cs.workshop_on);
 	while (cs.workshop < cs.workshop_on)
 	{
-		cout << "The number of workshops can't be less then the number of workshops in operation\n";
+		cout << "The number of workshops can't be less then the number of workshops in operation.\n";
 		cout << "Please, try again: ";
 		Checking_int(cs.workshop_on);
 	}
@@ -146,7 +146,7 @@ void Edit_CS(CS& cs)
 	Checking_int(cs.workshop_on);
 	while (cs.workshop < cs.workshop_on)
 	{
-		cout << "The number of workshops can't be less then the number of workshops in operation\n";
+		cout << "The number of workshops can't be less then the number of workshops in operation.\n";
 		cout << "Please, try again: ";
 		Checking_int(cs.workshop_on);
 	}
@@ -217,19 +217,19 @@ int main()
 		case 3:
 			if (check_case1 == 0 && check_case2 == 0)
 			{
-				cout << "You don't have any objects" << endl << "Please, enter your data and try again later!" << endl;
+				cout << "You don't have any objects." << endl << "Please, enter your data and try again later!" << endl;
 			}
 			else if (check_case1 == 1 && check_case2 == 0)
 			{
 				cout << "Pipe:\n";
 				Print_truba(tr1);
-				cout << "You don't have the compressor station\n";
+				cout << "You don't have the compressor station.\n";
 			}
 			else if (check_case1 == 0 && check_case2 == 1)
 			{
 				cout << "Compressor station:\n";
 				Print_CS(cs1);
-				cout << "You don't have the pipe\n";
+				cout << "You don't have the pipe.\n";
 			}
 			else if (check_case1 == 1 && check_case2 == 1)
 			{
@@ -242,7 +242,7 @@ int main()
 		case 4:
 			if (check_case1 == 0)
 			{
-				cout << "You have no status to change it" << endl << "Please, enter your data and try again later!" << endl;
+				cout << "You have no status to change it." << endl << "Please, enter your data and try again later!" << endl;
 			}
 			else
 			{
@@ -252,7 +252,7 @@ int main()
 		case 5:
 			if (check_case2 == 0)
 			{
-				cout << "You have no compressor station to change it" << endl << "Please, enter your data and try again later!" << endl;
+				cout << "You have no compressor station to change it." << endl << "Please, enter your data and try again later!" << endl;
 			}
 			else
 			{
@@ -262,17 +262,17 @@ int main()
 		case 6:
 			if (check_case1 == 0 && check_case2 == 0)
 			{
-				cout << "You don't have any objects to save" << endl << "Please, enter your data and try again later!" << endl;
+				cout << "You don't have any objects to save." << endl << "Please, enter your data and try again later!" << endl;
 			}
 			else if (check_case1 == 1 && check_case2 == 0)
 			{
-				cout << "Pipe successfully saved!" << " " << "Please, check your file" << endl;
+				cout << "Pipe successfully saved!" << " " << "Please, check your file." << endl;
 				Save_truba(tr1);
-				cout << "You don't have the compressor station to save\n";
+				cout << "You don't have the compressor station to save.\n";
 			}
 			else if (check_case1 == 0 && check_case2 == 1)
 			{
-				cout << "Compressor station successfully saved!" << " " << "Please, check your file" << endl;
+				cout << "Compressor station successfully saved!" << " " << "Please, check your file." << endl;
 				Save_CS(cs1);
 				cout << "You don't have the pipe to save\n";
 			}
@@ -292,8 +292,12 @@ int main()
 			}
 			else
 			{
-				cout << "Pipe:\n";
-				Print_truba(Download_truba());
+				cout << "Your pipe data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
+				if (pipe_file.is_open()) {
+					tr1 = Download_truba();
+					check_case1 = 1;
+					pipe_file.close();
+				}
 			}
 			if (cs_file.peek() == EOF)
 			{
@@ -302,8 +306,13 @@ int main()
 			}
 			else
 			{
-				cout << "Compressor station:\n";
-				Print_CS(Download_CS());
+				cout << "Your compressor station data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
+				if (cs_file.is_open()) {
+					cs1 = Download_CS();
+					check_case2 = 1;
+					cs_file.close();
+				}
+
 			}
 			break;
 		case 0:
