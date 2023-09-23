@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <cstdio>   
+#include <string>
 using namespace std;
 struct truba {
 	string name;
@@ -85,9 +87,10 @@ void Edit_truba(truba& tr)
 void Save_truba(const truba& tr)
 {
 	ofstream fout;
-	fout.open("pipe.txt", ios::out);
+	fout.open("both.txt", ios::app);
 	if (fout.is_open())
 	{
+		fout << "Pipe:" << endl;
 		fout << tr.name << endl << tr.length << endl << tr.diameter << endl << tr.under_repair << endl;
 		fout.close();
 	}
@@ -96,15 +99,22 @@ truba Download_truba()
 {
 	truba tr;
 	ifstream fin;
-	fin.open("pipe.txt", ios::in);
+	string line;
+	fin.open("both.txt", ios::in);
 	if (fin.is_open())
 	{
-		fin >> tr.name >> tr.length >> tr.diameter >> tr.under_repair;
+		while (getline(fin, line))
+		{
+			if (line == "Pipe:")
+			{
+				fin >> tr.name >> tr.length >> tr.diameter >> tr.under_repair;
+			}
+		}
 		fin.close();
 	}
 	return tr;
 }
-//สั
+
 CS Input_CS()
 {
 	CS cs;
@@ -161,22 +171,39 @@ void Edit_CS(CS& cs)
 void Save_CS(const CS& cs)
 {
 	ofstream fout;
-	fout.open("CS.txt", ios::out);
+	fout.open("both.txt", ios::app);
 	if (fout.is_open())
 	{
+		fout << "Compressor station:" << endl;
 		fout << cs.name << endl << cs.workshop << endl << cs.workshop_on << endl << cs.efficiency << endl;
 		fout.close();
 	}
 
 }
+void ClearFile(const string& filename)
+{
+	ofstream file("both.txt", ios::out | ios::trunc);
+	if (file.is_open())
+	{
+		file.close();
+	}
+}
 CS Download_CS()
 {
 	CS cs;
 	ifstream fin;
-	fin.open("CS.txt", ios::in);
+	string line;
+	fin.open("both.txt", ios::in);
 	if (fin.is_open())
 	{
-		fin >> cs.name >> cs.workshop >> cs.workshop_on >> cs.efficiency;
+		string line;
+		while (getline(fin, line))
+		{
+			if (line == "Compressor station:")
+			{
+				fin >> cs.name >> cs.workshop >> cs.workshop_on >> cs.efficiency;
+			}
+		}
 		fin.close();
 	}
 	return cs;
@@ -203,8 +230,8 @@ int main()
 		cout << "Selection: ";
 		int input;
 		Checking_exit(input);
-		fstream cs_file("CS.txt");
-		fstream pipe_file("pipe.txt");
+		fstream both_file("both.txt");
+		string filename = "both.txt";
 		switch (input) {
 		case 1:
 			tr1 = Input_truba();
@@ -260,6 +287,7 @@ int main()
 			}
 			break;
 		case 6:
+			ClearFile(filename);
 			if (check_case1 == 0 && check_case2 == 0)
 			{
 				cout << "You don't have any objects to save." << endl << "Please, enter your data and try again later!" << endl;
@@ -282,42 +310,40 @@ int main()
 				Save_CS(cs1);
 			}
 			break;
-	
-			break;
 		case 7:
-			if (pipe_file.peek() == EOF)
+			if (both_file.peek() == EOF)
 			{
-				cout << "File is empty!" << " " << "Please, check your data about your pipe!!!" << endl;
-				pipe_file.close();
+				cout << "File is empty!" << " " << "Please, check your data about your objects!!!" << endl;
+				both_file.close();
 			}
 			else
 			{
-				cout << "Your pipe data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
-				if (pipe_file.is_open()) {
-					tr1 = Download_truba();
-					check_case1 = 1;
-					pipe_file.close();
+				if (both_file.is_open()) 
+				{
+					string line;
+					while (getline(both_file, line))
+					{
+						if (line == "Pipe:")
+						{
+							cout << "Your pipe data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
+							tr1 = Download_truba();
+							check_case1 = 1;
+						}
+						else if (line == "Compressor station:")
+						{
+							cout << "Your compressor station data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
+							cs1 = Download_CS();
+							check_case2 = 1;
+						}
+					}
+					both_file.close();
+	
 				}
-			}
-			if (cs_file.peek() == EOF)
-			{
-				cout << "File is empty!" << " " << "Please, check your data about your compressor station!!!" << endl;
-				cs_file.close();
-			}
-			else
-			{
-				cout << "Your compressor station data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
-				if (cs_file.is_open()) {
-					cs1 = Download_CS();
-					check_case2 = 1;
-					cs_file.close();
-				}
-
 			}
 			break;
 		case 0:
 			return 0;
-			break;
+			break; 
 		default:
 			cout << "Error, bad input, try again!\n";
 			break;
