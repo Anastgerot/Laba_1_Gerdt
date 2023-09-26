@@ -148,24 +148,22 @@ void Print_CS(const CS& cs)
 }
 void Edit_CS(CS& cs)
 {
-	cout << "Type name: ";
-	cin >> cs.name;
-	cout << "Type the number of workshops: ";
-	Checking_int(cs.workshop);
-	cout << "Type the number of workshops in operation: ";
-	Checking_int(cs.workshop_on);
-	while (cs.workshop < cs.workshop_on)
+	if (cs.name.empty())
 	{
-		cout << "The number of workshops can't be less then the number of workshops in operation.\n";
-		cout << "Please, try again: ";
-		Checking_int(cs.workshop_on);
+		cout << "You don't have data about your compressor station " << endl;
 	}
-	cout << "Type efficiency (From A to D): ";
-	cin >> cs.efficiency;
-	while (!(cs.efficiency == 'A' || cs.efficiency == 'B' || cs.efficiency == 'C' || cs.efficiency == 'D'))
+	else
 	{
-		cout << "Please, enter available indicator (From A to D): ";
-		cin >> cs.efficiency;
+		cout << "The number of workshops: " << " " << cs.workshop << endl;
+		cout << "Type the new number of workshops in operation: ";
+		cout << "Your òew data has been successfully modified";
+		Checking_int(cs.workshop_on);
+		while (cs.workshop < cs.workshop_on)
+		{
+			cout << "The number of workshops can't be less then the number of workshops in operation.\n";
+			cout << "Please, try again: ";
+			Checking_int(cs.workshop_on);
+		}
 	}
 }
 void Save_CS(const CS& cs)
