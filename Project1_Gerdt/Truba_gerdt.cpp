@@ -18,7 +18,7 @@ struct CS {
 void Checking_exit(int& a)
 {
 	cin >> a;
-	while (!cin || a < 0)
+	while (!cin || a < 0 || cin.peek() != '\n')
 	{
 		cin.clear();
 		cin.ignore(1000, '\n');
@@ -29,7 +29,7 @@ void Checking_exit(int& a)
 void Checking_int(int& a)
 {
 	cin >> a;
-	while (!cin || a<= 0)
+	while (!cin || a<= 0 || cin.peek() != '\n')
 	{
 		cin.clear();
 		cin.ignore(1000, '\n');
@@ -40,7 +40,7 @@ void Checking_int(int& a)
 void Checking_double(double& a)
 {
 	cin >> a;
-	while (!cin || a <= 0)
+	while (!cin || a <= 0 || cin.peek() != '\n')
 	{
 		cin.clear();
 		cin.ignore(1000, '\n');
@@ -51,7 +51,7 @@ void Checking_double(double& a)
 void Checking_bool(bool&a)
 {
 	cin >> a;
-	while (!cin || !(a==0 || a==1))
+	while (!cin || !(a==0 || a==1) || cin.peek() != '\n')
 	{
 		cin.clear();
 		cin.ignore(1000, '\n');
