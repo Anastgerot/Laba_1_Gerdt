@@ -63,7 +63,8 @@ truba Input_truba()
 {
 	truba tr;
 	cout << "Type name: ";
-	cin >>tr.name; 
+	cin.ignore();
+	getline(cin, tr.name);
 	cout << "Type length: ";
 	Checking_double(tr.length);
 	cout << "Type diameter: ";
@@ -107,7 +108,8 @@ truba Download_truba()
 		{
 			if (line == "Pipe:")
 			{
-				fin >> tr.name >> tr.length >> tr.diameter >> tr.under_repair;
+				getline(fin, tr.name);
+				fin >> tr.length >> tr.diameter >> tr.under_repair;
 			}
 		}
 		fin.close();
@@ -119,7 +121,8 @@ CS Input_CS()
 {
 	CS cs;
 	cout << "Type name: ";
-	cin >> cs.name;
+	cin.ignore();
+	getline(cin, cs.name);
 	cout << "Type the number of workshops: ";
 	Checking_int(cs.workshop);
 	cout << "Type the number of workshops in operation: ";
@@ -199,7 +202,8 @@ CS Download_CS()
 		{
 			if (line == "Compressor station:")
 			{
-				fin >> cs.name >> cs.workshop >> cs.workshop_on >> cs.efficiency;
+				getline(fin, cs.name);
+				fin  >> cs.workshop >> cs.workshop_on >> cs.efficiency;
 			}
 		}
 		fin.close();
