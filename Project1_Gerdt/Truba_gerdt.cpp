@@ -159,8 +159,8 @@ void Edit_CS(CS& cs)
 	{
 		cout << "The number of workshops: " << " " << cs.workshop << endl;
 		cout << "Type the new number of workshops in operation: ";
-		cout << "Your òew data has been successfully modified";
 		Checking_int(cs.workshop_on);
+		cout << "Your new data has been successfully modified";
 		while (cs.workshop < cs.workshop_on)
 		{
 			cout << "The number of workshops can't be less then the number of workshops in operation.\n";
