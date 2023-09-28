@@ -21,7 +21,7 @@ void Checking_exit(int& a)
 	while (!cin || a < 0 || cin.peek() != '\n')
 	{
 		cin.clear();
-		cin.ignore(1000, '\n');
+		cin.ignore(1000, '\n');//Разобраться с син игнор
 		cout << "Please, try again: ";
 		cin >> a;
 	}
@@ -63,7 +63,7 @@ truba Input_truba()
 {
 	truba tr;
 	cout << "Type name: ";
-	cin.ignore();
+	cin.ignore();//Прочитать документацию
 	getline(cin, tr.name);
 	cout << "Type length: ";
 	Checking_double(tr.length);
@@ -165,7 +165,7 @@ void Edit_CS(CS& cs)
 		{
 			cout << "The number of workshops can't be less then the number of workshops in operation.\n";
 			cout << "Please, try again: ";
-			Checking_int(cs.workshop_on);
+			Checking_int(cs.workshop_on);//template шаблон функции проверки (одной для всех типов данных)
 		}
 	}
 }
@@ -243,7 +243,7 @@ int main()
 			cs1 = Input_CS();
 			check_case2 = 1;
 			break;
-		case 3:
+		case 3://выполнять проверку внутри функции вывода
 			if (check_case1 == 0 && check_case2 == 0)
 			{
 				cout << "You don't have any objects." << endl << "Please, enter your data and try again later!" << endl;

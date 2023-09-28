@@ -1,10 +1,10 @@
 Pipe:
-New data technology
-45
-43
+p #1
+666.66
+4
 1
 Compressor station:
-Loly pop
-67
-34
-A
+cs #1
+20
+20
+D
