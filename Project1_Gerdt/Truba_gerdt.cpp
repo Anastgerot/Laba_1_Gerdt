@@ -21,7 +21,7 @@ void Checking_exit(int& a)
 	while (!cin || a < 0 || cin.peek() != '\n')
 	{
 		cin.clear();
-		cin.ignore(1000, '\n');//Разобраться с син игнор
+		cin.ignore(1000, '\n');
 		cout << "Please, try again: ";
 		cin >> a;
 	}
@@ -59,11 +59,10 @@ void Checking_bool(bool&a)
 		cin >> a;
 	}
 };
-truba Input_truba()
+void Input_truba(truba& tr)
 {
-	truba tr;
 	cout << "Type name: ";
-	cin.ignore();//Прочитать документацию
+	cin >> ws;
 	getline(cin, tr.name);
 	cout << "Type length: ";
 	Checking_double(tr.length);
@@ -71,57 +70,95 @@ truba Input_truba()
 	Checking_int(tr.diameter);
 	cout << "Under repair? (1 - Yes, 0 - No): ";
 	Checking_bool(tr.under_repair);
-	return tr;
 }
 void Print_truba(const truba& tr)
 {
-	cout << "Name: " << tr.name << endl
-		<< "Length: " << tr.length << endl
-		<< "Diameter: " << tr.diameter << endl
-		<< "Under repair? (1 - Yes, 0 - No): " << tr.under_repair << endl;
+	if (tr.name.empty())
+	{
+		cout << "You don't have the pipe.\n";
+	}
+	else
+	{
+		cout << "Pipe:\n";
+		cout << "Name: " << tr.name << endl
+			<< "Length: " << tr.length << endl
+			<< "Diameter: " << tr.diameter << endl
+			<< "Under repair? (1 - Yes, 0 - No): " << tr.under_repair << endl;
+	}
 }
 void Edit_truba(truba& tr)
 {
-	tr.under_repair = !tr.under_repair;
-	cout << "The status has been successfully changed. "<< endl;
+	if (!tr.name.empty())
+	{
+		tr.under_repair = !tr.under_repair;
+		cout << "The status has been successfully changed. " << endl;
+	}
+	else 
+	{
+		cout << "You have no status to change it." << endl << "Please, enter your data and try again later!" << endl;
+	}
 }
 void Save_truba(const truba& tr)
 {
-	ofstream fout;
-	fout.open("both.txt", ios::app);
-	if (fout.is_open())
+	if (tr.name.empty())
 	{
-		fout << "Pipe:" << endl;
-		fout << tr.name << endl << tr.length << endl << tr.diameter << endl << tr.under_repair << endl;
+		cout << "You don't have the pipe to save\n";
+	}
+	else
+	{
+		ofstream fout;
+		fout.open("both.txt", ios::app);
+		if (fout.is_open())
+		{
+			fout << "Pipe:" << endl;
+			fout << tr.name << endl << tr.length << endl << tr.diameter << endl << tr.under_repair << endl;
+		}
 		fout.close();
+		cout << "Pipe successfully saved!" << " " << "Please, check your file." << endl;
 	}
 }
-truba Download_truba()
+void Download_truba(truba& tr)
 {
-	truba tr;
-	ifstream fin;
-	string line;
-	fin.open("both.txt", ios::in);
-	if (fin.is_open())
+	bool replace_data;
+	replace_data = 1;
+	if (!tr.name.empty())
 	{
-		while (getline(fin, line))
+		cout << "You already have data about your pipe!" << endl;
+		cout << "If you are sure you want to replace them with data from the file, then press 1, otherwise 0: ";
+		Checking_bool(replace_data);
+	}
+	if (replace_data == 1)
+	{
+		ifstream fin;
+		string line;
+		fin.open("both.txt", ios::in);
+		if (fin.is_open())
 		{
-			if (line == "Pipe:")
+			while (getline(fin, line))
 			{
-				getline(fin, tr.name);
-				fin >> tr.length >> tr.diameter >> tr.under_repair;
+				if (line == "Pipe:")
+				{
+					getline(fin, tr.name);
+					fin >> tr.length >> tr.diameter >> tr.under_repair;
+				}
+			}
+			fin.close();
+			if (tr.name.empty())
+			{
+				cout << "You don't have data about the pipe to download\n";
+			}
+			else
+			{
+				cout << "Your pipe data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
 			}
 		}
-		fin.close();
 	}
-	return tr;
 }
 
-CS Input_CS()
+void Input_CS(CS& cs)
 {
-	CS cs;
 	cout << "Type name: ";
-	cin.ignore();
+	cin >> ws;
 	getline(cin, cs.name);
 	cout << "Type the number of workshops: ";
 	Checking_int(cs.workshop);
@@ -140,48 +177,62 @@ CS Input_CS()
 		cout << "Please, enter available indicator (From A to D): ";
 		cin >> cs.efficiency;
 	}
-	return cs;
 }
 void Print_CS(const CS& cs)
 {
-	cout << "Name: " << cs.name << endl
-		<< "The number of workshops: " << cs.workshop << endl
-		<< "The number of workshops in operation: " << cs.workshop_on << endl
-		<< "Efficiency: " << cs.efficiency << endl;
+	if (cs.name.empty())
+	{
+		cout << "You don't have the compressor station.\n";
+	}
+	else
+	{
+		cout << "Compressor station:\n";
+		cout << "Name: " << cs.name << endl
+			<< "The number of workshops: " << cs.workshop << endl
+			<< "The number of workshops in operation: " << cs.workshop_on << endl
+			<< "Efficiency: " << cs.efficiency << endl;
+	}
 }
 void Edit_CS(CS& cs)
 {
 	if (cs.name.empty())
 	{
-		cout << "You don't have data about your compressor station " << endl;
+		cout << "You have no compressor station to change it." << endl << "Please, enter your data and try again later!" << endl;
 	}
 	else
 	{
 		cout << "The number of workshops: " << " " << cs.workshop << endl;
 		cout << "Type the new number of workshops in operation: ";
 		Checking_int(cs.workshop_on);
-		cout << "Your new data has been successfully modified";
 		while (cs.workshop < cs.workshop_on)
 		{
 			cout << "The number of workshops can't be less then the number of workshops in operation.\n";
 			cout << "Please, try again: ";
-			Checking_int(cs.workshop_on);//template шаблон функции проверки (одной для всех типов данных)
+			Checking_int(cs.workshop_on);
 		}
+		cout << "Your new data has been successfully modified.\n";
 	}
 }
 void Save_CS(const CS& cs)
 {
-	ofstream fout;
-	fout.open("both.txt", ios::app);
-	if (fout.is_open())
+	if (cs.name.empty())
 	{
-		fout << "Compressor station:" << endl;
-		fout << cs.name << endl << cs.workshop << endl << cs.workshop_on << endl << cs.efficiency << endl;
-		fout.close();
+		cout << "You don't have the compressor station to save.\n";
 	}
-
+	else
+	{
+		ofstream fout;
+		fout.open("both.txt", ios::app);
+		if (fout.is_open())
+		{
+			fout << "Compressor station:" << endl;
+			fout << cs.name << endl << cs.workshop << endl << cs.workshop_on << endl << cs.efficiency << endl;
+		}
+		fout.close();
+		cout << "Compressor station successfully saved!" << " " << "Please, check your file." << endl;
+	}
 }
-void ClearFile(const string& filename)
+void ClearFile()
 {
 	ofstream file("both.txt", ios::out | ios::trunc);
 	if (file.is_open())
@@ -189,37 +240,49 @@ void ClearFile(const string& filename)
 		file.close();
 	}
 }
-CS Download_CS()
+void Download_CS(CS& cs)
 {
-	CS cs;
-	ifstream fin;
-	string line;
-	fin.open("both.txt", ios::in);
-	if (fin.is_open())
+	bool replace_data;
+	replace_data = 1;
+	if (!cs.name.empty())
 	{
+		cout << "You already have data about your compressor station!" << endl;
+		cout << "If you are sure you want to replace them with data from the file, then press 1, otherwise 0: ";
+		Checking_bool(replace_data);
+	}
+	if (replace_data == 1)
+	{
+		ifstream fin;
 		string line;
-		while (getline(fin, line))
+		fin.open("both.txt", ios::in);
+		if (fin.is_open())
 		{
-			if (line == "Compressor station:")
+			string line;
+			while (getline(fin, line))
 			{
-				getline(fin, cs.name);
-				fin  >> cs.workshop >> cs.workshop_on >> cs.efficiency;
+				if (line == "Compressor station:")
+				{
+					getline(fin, cs.name);
+					fin >> cs.workshop >> cs.workshop_on >> cs.efficiency;
+				}
+			}
+			fin.close();
+			if (cs.name.empty())
+			{
+				cout << "You don't have data about the compressor station to download.\n";
+			}
+			else
+			{
+				cout << "Your compressor station data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
 			}
 		}
-		fin.close();
 	}
-	return cs;
 }
 int main()
 {
 	truba tr1;
 	CS cs1;
-	int check_case1;
-	int check_case2;
-	check_case1 = 0;
-	check_case2 = 0;
 	while (true) {
-
 		cout << "Choose the number:\n";
 		cout << "1. Add the pipe\n";
 		cout << "2. Add the compressor station\n";
@@ -233,84 +296,27 @@ int main()
 		int input;
 		Checking_exit(input);
 		fstream both_file("both.txt");
-		string filename = "both.txt";
 		switch (input) {
 		case 1:
-			tr1 = Input_truba();
-			check_case1 = 1;
+			Input_truba(tr1);
 			break;
 		case 2:
-			cs1 = Input_CS();
-			check_case2 = 1;
+			Input_CS(cs1);
 			break;
-		case 3://выполнять проверку внутри функции вывода
-			if (check_case1 == 0 && check_case2 == 0)
-			{
-				cout << "You don't have any objects." << endl << "Please, enter your data and try again later!" << endl;
-			}
-			else if (check_case1 == 1 && check_case2 == 0)
-			{
-				cout << "Pipe:\n";
-				Print_truba(tr1);
-				cout << "You don't have the compressor station.\n";
-			}
-			else if (check_case1 == 0 && check_case2 == 1)
-			{
-				cout << "Compressor station:\n";
-				Print_CS(cs1);
-				cout << "You don't have the pipe.\n";
-			}
-			else if (check_case1 == 1 && check_case2 == 1)
-			{
-				cout << "Pipe:\n";
-				Print_truba(tr1);
-				cout << "Compressor station:\n";
-				Print_CS(cs1);
-			}
+		case 3:
+			Print_truba(tr1);
+			Print_CS(cs1);
 			break;
 		case 4:
-			if (check_case1 == 0)
-			{
-				cout << "You have no status to change it." << endl << "Please, enter your data and try again later!" << endl;
-			}
-			else
-			{
-				Edit_truba(tr1);
-			}
+			Edit_truba(tr1);
 			break;
 		case 5:
-			if (check_case2 == 0)
-			{
-				cout << "You have no compressor station to change it." << endl << "Please, enter your data and try again later!" << endl;
-			}
-			else
-			{
-				Edit_CS(cs1);
-			}
+			Edit_CS(cs1);
 			break;
 		case 6:
-			ClearFile(filename);
-			if (check_case1 == 0 && check_case2 == 0)
-			{
-				cout << "You don't have any objects to save." << endl << "Please, enter your data and try again later!" << endl;
-			}
-			else if (check_case1 == 1 && check_case2 == 0)
-			{
-				cout << "Pipe successfully saved!" << " " << "Please, check your file." << endl;
-				Save_truba(tr1);
-				cout << "You don't have the compressor station to save.\n";
-			}
-			else if (check_case1 == 0 && check_case2 == 1)
-			{
-				cout << "Compressor station successfully saved!" << " " << "Please, check your file." << endl;
-				Save_CS(cs1);
-				cout << "You don't have the pipe to save\n";
-			}
-			else if (check_case1 == 1 && check_case2 == 1)
-			{
-				Save_truba(tr1);
-				Save_CS(cs1);
-			}
+			ClearFile();
+			Save_truba(tr1);
+			Save_CS(cs1);
 			break;
 		case 7:
 			if (both_file.peek() == EOF)
@@ -320,27 +326,8 @@ int main()
 			}
 			else
 			{
-				if (both_file.is_open()) 
-				{
-					string line;
-					while (getline(both_file, line))
-					{
-						if (line == "Pipe:")
-						{
-							cout << "Your pipe data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
-							tr1 = Download_truba();
-							check_case1 = 1;
-						}
-						else if (line == "Compressor station:")
-						{
-							cout << "Your compressor station data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
-							cs1 = Download_CS();
-							check_case2 = 1;
-						}
-					}
-					both_file.close();
-	
-				}
+				Download_truba(tr1);
+				Download_CS(cs1);
 			}
 			break;
 		case 0:
@@ -354,3 +341,9 @@ int main()
 	}
 
 }
+//Закрывать после (про cin.close()) +
+//Выполнять проверку внутри функции (на введенные данные) +
+//Разобраться с син игнор +
+//cin.ignore();//Прочитать документацию +
+//Сделать проверку если данные введены, тогда нужно вывести сообщение о том, хочет ли пользователь заново их скачать из файла +
+//template шаблон функции проверки (одной для всех типов данных) (для 2 лабы, не нужно на повышение балла)
