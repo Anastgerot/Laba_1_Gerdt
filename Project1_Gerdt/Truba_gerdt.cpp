@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cstdio>   
 #include <string>
+#include <unordered_map>
 using namespace std;
 struct truba {
 	string name;
@@ -15,75 +16,45 @@ struct CS {
 	int workshop_on;
 	char efficiency;
 };
-void Checking_exit(int& a)
+template <typename T>
+T GetCorrectNumber(T min, T max)
 {
-	cin >> a;
-	while (!cin || a < 0 || cin.peek() != '\n')
+	T a;
+	while ((cin >> a).fail() || a < min || a > max || cin.peek() != '\n')
 	{
 		cin.clear();
 		cin.ignore(1000, '\n');
-		cout << "Please, try again: ";
-		cin >> a;
+		cout << "Type number (" "from" << " " << min << " " << "to" << " " << max << "): ";
 	}
-};
-void Checking_int(int& a)
-{
-	cin >> a;
-	while (!cin || a<= 0 || cin.peek() != '\n')
-	{
-		cin.clear();
-		cin.ignore(1000, '\n');
-		cout << "Please, try again: ";
-		cin >> a;
-	}
-};
-void Checking_double(double& a)
-{
-	cin >> a;
-	while (!cin || a <= 0 || cin.peek() != '\n')
-	{
-		cin.clear();
-		cin.ignore(1000, '\n');
-		cout << "Please, try again: ";
-		cin >> a;
-	}
-};
-void Checking_bool(bool&a)
-{
-	cin >> a;
-	while (!cin || !(a==0 || a==1) || cin.peek() != '\n')
-	{
-		cin.clear();
-		cin.ignore(1000, '\n');
-		cout << "Please, try again: ";
-		cin >> a;
-	}
-};
-void Input_truba(truba& tr)
+	return a;
+}
+istream& operator >> (istream& in, truba& tr)
 {
 	cout << "Type name: ";
-	cin >> ws;
-	getline(cin, tr.name);
+	in >> ws;
+	getline(in, tr.name);
 	cout << "Type length: ";
-	Checking_double(tr.length);
+	tr.length = GetCorrectNumber(0.0, 1000000.0);
 	cout << "Type diameter: ";
-	Checking_int(tr.diameter);
+	tr.diameter = GetCorrectNumber(0, 1000000);
 	cout << "Under repair? (1 - Yes, 0 - No): ";
-	Checking_bool(tr.under_repair);
+	tr.under_repair = GetCorrectNumber(0,1);
+	return in;
 }
-void Print_truba(const truba& tr)
+ostream& operator << (ostream& out, const truba& tr)
 {
 	if (tr.name.empty())
 	{
-		cout << "You don't have the pipe.\n";
+		out << "You don't have the pipe.\n";
 	}
 	else
 	{
-		cout << "Pipe:\n";
-		cout << "Name: " << tr.name << endl
+		out << "Pipe:\n";
+		out << "Name: " << tr.name << endl
 			<< "Length: " << tr.length << endl
 			<< "Diameter: " << tr.diameter << endl
 			<< "Under repair? (1 - Yes, 0 - No): " << tr.under_repair << endl;
+		return out;
 	}
 }
 void Edit_truba(truba& tr)
@@ -98,7 +69,7 @@ void Edit_truba(truba& tr)
 		cout << "You have no status to change it." << endl << "Please, enter your data and try again later!" << endl;
 	}
 }
-void Save_truba(const truba& tr)
+void Save_truba (ofstream& fout, const truba& tr)
 {
 	if (tr.name.empty())
 	{
@@ -106,92 +77,66 @@ void Save_truba(const truba& tr)
 	}
 	else
 	{
-		ofstream fout;
-		fout.open("both.txt", ios::app);
-		if (fout.is_open())
-		{
-			fout << "Pipe:" << endl;
-			fout << tr.name << endl << tr.length << endl << tr.diameter << endl << tr.under_repair << endl;
-		}
-		fout.close();
+		fout << "Pipe:" << endl;
+		fout << tr.name << endl << tr.length << endl << tr.diameter << endl << tr.under_repair << endl;
 		cout << "Pipe successfully saved!" << " " << "Please, check your file." << endl;
 	}
 }
-void Download_truba(truba& tr)
+void Download_truba(ifstream& fin, truba& tr)
 {
-	bool replace_data;
-	replace_data = 1;
-	if (!tr.name.empty())
+	string line;
+	while (getline(fin, line))
 	{
-		cout << "You already have data about your pipe!" << endl;
-		cout << "If you are sure you want to replace them with data from the file, then press 1, otherwise 0: ";
-		Checking_bool(replace_data);
-	}
-	if (replace_data == 1)
-	{
-		ifstream fin;
-		string line;
-		fin.open("both.txt", ios::in);
-		if (fin.is_open())
+		if (line == "Pipe:")
 		{
-			while (getline(fin, line))
-			{
-				if (line == "Pipe:")
-				{
-					getline(fin, tr.name);
-					fin >> tr.length >> tr.diameter >> tr.under_repair;
-				}
-			}
-			fin.close();
-			if (tr.name.empty())
-			{
-				cout << "You don't have data about the pipe to download\n";
-			}
-			else
-			{
-				cout << "Your pipe data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
-			}
+			getline(fin, tr.name);
+			fin >> tr.length >> tr.diameter >> tr.under_repair;
 		}
+	}
+	if (tr.name.empty())
+	{
+		cout << "You don't have data about the pipe to download\n";
+	}
+	else
+	{
+		cout << "Your pipe data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
 	}
 }
 
-void Input_CS(CS& cs)
+istream& operator >> (istream& in, CS& cs)
 {
 	cout << "Type name: ";
-	cin >> ws;
-	getline(cin, cs.name);
+	in >> ws;
+	getline(in, cs.name);
 	cout << "Type the number of workshops: ";
-	Checking_int(cs.workshop);
+	cs.workshop = GetCorrectNumber(1, 1000000);
 	cout << "Type the number of workshops in operation: ";
-	Checking_int(cs.workshop_on);
+	cs.workshop_on = GetCorrectNumber(1, cs.workshop);
 	while (cs.workshop < cs.workshop_on)
 	{
 		cout << "The number of workshops can't be less then the number of workshops in operation.\n";
 		cout << "Please, try again: ";
-		Checking_int(cs.workshop_on);
+		cs.workshop_on = GetCorrectNumber(1, cs.workshop);
 	}
 	cout << "Type efficiency (From A to D): ";
-	cin >> cs.efficiency;
-	while (!(cs.efficiency == 'A' || cs.efficiency == 'B' || cs.efficiency == 'C' || cs.efficiency == 'D'))
-	{
-		cout << "Please, enter available indicator (From A to D): ";
-		cin >> cs.efficiency;
-	}
-}
-void Print_CS(const CS& cs)
+	cs.efficiency = GetCorrectNumber('A', 'D');
+	return in;
+}  
+ostream& operator << (ostream& out, const CS& cs)
 {
 	if (cs.name.empty())
 	{
-		cout << "You don't have the compressor station.\n";
+		out << "You don't have the compressor station.\n";
 	}
 	else
 	{
-		cout << "Compressor station:\n";
-		cout << "Name: " << cs.name << endl
+		out << "Compressor station:\n";
+		out << "Name: " << cs.name << endl
 			<< "The number of workshops: " << cs.workshop << endl
 			<< "The number of workshops in operation: " << cs.workshop_on << endl
 			<< "Efficiency: " << cs.efficiency << endl;
 	}
+	return out;
 }
 void Edit_CS(CS& cs)
 {
@@ -203,17 +148,17 @@ void Edit_CS(CS& cs)
 	{
 		cout << "The number of workshops: " << " " << cs.workshop << endl;
 		cout << "Type the new number of workshops in operation: ";
-		Checking_int(cs.workshop_on);
+		cs.workshop_on = GetCorrectNumber(1, cs.workshop);
 		while (cs.workshop < cs.workshop_on)
 		{
 			cout << "The number of workshops can't be less then the number of workshops in operation.\n";
 			cout << "Please, try again: ";
-			Checking_int(cs.workshop_on);
+			cs.workshop_on = GetCorrectNumber(1, cs.workshop);
 		}
 		cout << "Your new data has been successfully modified.\n";
 	}
 }
-void Save_CS(const CS& cs)
+void Save_CS(ofstream& fout, const CS& cs)
 {
 	if (cs.name.empty())
 	{
@@ -221,14 +166,8 @@ void Save_CS(const CS& cs)
 	}
 	else
 	{
-		ofstream fout;
-		fout.open("both.txt", ios::app);
-		if (fout.is_open())
-		{
-			fout << "Compressor station:" << endl;
-			fout << cs.name << endl << cs.workshop << endl << cs.workshop_on << endl << cs.efficiency << endl;
-		}
-		fout.close();
+		fout << "Compressor station:" << endl;
+		fout << cs.name << endl << cs.workshop << endl << cs.workshop_on << endl << cs.efficiency << endl;
 		cout << "Compressor station successfully saved!" << " " << "Please, check your file." << endl;
 	}
 }
@@ -240,48 +179,46 @@ void ClearFile()
 		file.close();
 	}
 }
-void Download_CS(CS& cs)
+void Download_CS(ifstream& fin, CS& cs)
 {
-	bool replace_data;
-	replace_data = 1;
-	if (!cs.name.empty())
-	{
-		cout << "You already have data about your compressor station!" << endl;
-		cout << "If you are sure you want to replace them with data from the file, then press 1, otherwise 0: ";
-		Checking_bool(replace_data);
-	}
-	if (replace_data == 1)
-	{
-		ifstream fin;
 		string line;
-		fin.open("both.txt", ios::in);
-		if (fin.is_open())
+		while (getline(fin, line))
 		{
-			string line;
-			while (getline(fin, line))
+			if (line == "Compressor station:")
 			{
-				if (line == "Compressor station:")
-				{
-					getline(fin, cs.name);
-					fin >> cs.workshop >> cs.workshop_on >> cs.efficiency;
-				}
+				getline(fin, cs.name);
+				fin >> cs.workshop >> cs.workshop_on >> cs.efficiency;
 			}
-			fin.close();
-			if (cs.name.empty())
-			{
-				cout << "You don't have data about the compressor station to download.\n";
-			}
-			else
-			{
-				cout << "Your compressor station data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
-			}
+		if (cs.name.empty())
+		{
+			cout << "You don't have data about the compressor station to download.\n";
+		}
+		else
+		{
+			cout << "Your compressor station data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
 		}
 	}
+}
+truba& SelectTruba (unordered_map<int, truba>& p) 
+{
+	cout << "Enter index for your pipe: ";
+	unsigned int index = GetCorrectNumber(0u, unsigned int(p.size() - 1));
+	return p[index];
+}
+CS& SelectCS(unordered_map<int, CS>& c)
+{
+	cout << "Enter index for your compressor station: ";
+	unsigned int index = GetCorrectNumber(0u, unsigned int(c.size()-1));
+	return c[index];
 }
 int main()
 {
 	truba tr1;
 	CS cs1;
+	int max_id_cs = 0;
+	int max_id_truba = 0;
+	unordered_map<int, truba> pipe;
+	unordered_map<int, CS> ks;
 	while (true) {
 		cout << "Choose the number:\n";
 		cout << "1. Add the pipe\n";
@@ -293,30 +230,41 @@ int main()
 		cout << "7. Download\n";
 		cout << "0. Exit\n";
 		cout << "Selection: ";
-		int input;
-		Checking_exit(input);
+		ofstream fout;
+		ifstream fin;
 		fstream both_file("both.txt");
-		switch (input) {
+		switch (GetCorrectNumber(0,7)) {
 		case 1:
-			Input_truba(tr1);
+			cin >> tr1;
+			pipe.insert({max_id_truba++, tr1});
 			break;
 		case 2:
-			Input_CS(cs1);
+			cin >> cs1;
+			ks.insert({max_id_cs++, cs1});
 			break;
 		case 3:
-			Print_truba(tr1);
-			Print_CS(cs1);
+			cout << "You have" << " " << max_id_truba <<  " " << "pipes!" << endl;;
+			cout << SelectTruba(pipe) << endl;
+			cout << "You have" << " " << max_id_cs << " " << "compressor stations!" << endl;
+			cout << SelectCS(ks) << endl;
 			break;
 		case 4:
-			Edit_truba(tr1);
+			//Edit_truba(tr1);
 			break;
 		case 5:
-			Edit_CS(cs1);
+			//Edit_CS(cs1);
 			break;
 		case 6:
 			ClearFile();
-			Save_truba(tr1);
-			Save_CS(cs1);
+			fout.open("both.txt", ios::app);
+			if (fout.is_open())
+			{
+				for (const auto& tr : pipe)
+					Save_truba(fout, tr.second);
+				for (const auto& cs : ks)
+					Save_CS(fout, cs.second);
+				fout.close();
+			}
 			break;
 		case 7:
 			if (both_file.peek() == EOF)
@@ -326,8 +274,26 @@ int main()
 			}
 			else
 			{
-				Download_truba(tr1);
-				Download_CS(cs1);
+				fin.open("both.txt", ios::in);
+				if (fin.is_open())
+				{
+					//1 вариант
+					//pipe.insert({max_id_truba++ , Download_truba(fin, tr1)});
+					//ks.insert({max_id_cs++ , Download_CS(fin, cs1)})
+					//2 вариант
+					/*if (Download_truba(fin, tr1))
+					{
+						pipe[max_id_truba++] = tr1;
+					}
+					if (Download_CS(fin, cs1))
+					{
+						ks[max_id_cs++] = cs1;
+					}
+					*/
+					fin.close();
+					fin.close();
+				}
+			//Download_truba(tr1);
 			}
 			break;
 		case 0:
@@ -341,9 +307,5 @@ int main()
 	}
 
 }
-//Закрывать после (про cin.close()) +
-//Выполнять проверку внутри функции (на введенные данные) +
-//Разобраться с син игнор +
-//cin.ignore();//Прочитать документацию +
-//Сделать проверку если данные введены, тогда нужно вывести сообщение о том, хочет ли пользователь заново их скачать из файла +
-//template шаблон функции проверки (одной для всех типов данных) (для 2 лабы, не нужно на повышение балла)
+
+//template шаблон функции проверки (одной для всех типов данных) 
