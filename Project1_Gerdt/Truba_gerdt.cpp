@@ -82,7 +82,7 @@ void Save_truba (ofstream& fout, const truba& tr)
 		cout << "Pipe successfully saved!" << " " << "Please, check your file." << endl;
 	}
 }
-void Download_truba(ifstream& fin, truba& tr)
+truba& Download_truba(ifstream& fin, truba& tr)
 {
 	string line;
 	while (getline(fin, line))
@@ -91,15 +91,16 @@ void Download_truba(ifstream& fin, truba& tr)
 		{
 			getline(fin, tr.name);
 			fin >> tr.length >> tr.diameter >> tr.under_repair;
+			if (tr.name.empty())
+			{
+				cout << "You don't have data about the pipe to download\n";
+			}
+			else
+			{
+				cout << "Your pipe data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
+			}
+			return tr;
 		}
-	}
-	if (tr.name.empty())
-	{
-		cout << "You don't have data about the pipe to download\n";
-	}
-	else
-	{
-		cout << "Your pipe data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
 	}
 }
 
@@ -179,23 +180,24 @@ void ClearFile()
 		file.close();
 	}
 }
-void Download_CS(ifstream& fin, CS& cs)
+CS& Download_CS(ifstream& fin, CS& cs)
 {
-		string line;
-		while (getline(fin, line))
+	string line;
+	while (getline(fin, line))
+	{
+		if (line == "Compressor station:")
 		{
-			if (line == "Compressor station:")
+			getline(fin, cs.name);
+			fin >> cs.workshop >> cs.workshop_on >> cs.efficiency;
+			if (cs.name.empty())
 			{
-				getline(fin, cs.name);
-				fin >> cs.workshop >> cs.workshop_on >> cs.efficiency;
+				cout << "You don't have data about the compressor station to download.\n";
 			}
-		if (cs.name.empty())
-		{
-			cout << "You don't have data about the compressor station to download.\n";
-		}
-		else
-		{
-			cout << "Your compressor station data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
+			else
+			{
+				cout << "Your compressor station data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
+			}
+			return cs;
 		}
 	}
 }
@@ -249,16 +251,17 @@ int main()
 			cout << SelectCS(ks) << endl;
 			break;
 		case 4:
-			//Edit_truba(tr1);
+			Edit_truba(tr1);
 			break;
 		case 5:
-			//Edit_CS(cs1);
+			Edit_CS(cs1);
 			break;
 		case 6:
 			ClearFile();
 			fout.open("both.txt", ios::app);
 			if (fout.is_open())
 			{
+				fout << pipe.size() << " " << ks.size() << endl;
 				for (const auto& tr : pipe)
 					Save_truba(fout, tr.second);
 				for (const auto& cs : ks)
@@ -277,23 +280,14 @@ int main()
 				fin.open("both.txt", ios::in);
 				if (fin.is_open())
 				{
-					//1 вариант
-					//pipe.insert({max_id_truba++ , Download_truba(fin, tr1)});
-					//ks.insert({max_id_cs++ , Download_CS(fin, cs1)})
-					//2 вариант
-					/*if (Download_truba(fin, tr1))
-					{
-						pipe[max_id_truba++] = tr1;
-					}
-					if (Download_CS(fin, cs1))
-					{
-						ks[max_id_cs++] = cs1;
-					}
-					*/
-					fin.close();
+					int count_pipe, count_cs;
+					fin >> count_pipe >> count_cs;
+					while (count_pipe--)
+						pipe.insert({max_id_truba++ , Download_truba(fin, tr1)});
+					while (count_cs--)
+						ks.insert({ max_id_cs++ , Download_CS(fin, cs1)});
 					fin.close();
 				}
-			//Download_truba(tr1);
 			}
 			break;
 		case 0:
@@ -307,5 +301,3 @@ int main()
 	}
 
 }
-
-//template шаблон функции проверки (одной для всех типов данных) 
