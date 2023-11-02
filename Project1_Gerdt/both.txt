@@ -1,21 +1,7 @@
-3 1
+1 0
 Pipe:
-kmoi
-56
-33
-1
-Pipe:
-rev 6
-43
-22
 0
-Pipe:
-kgspog
-5
-4
+hfgtd
+54
+34
 1
-Compressor station:
-jujgp
-56
-43
-A

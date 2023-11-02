@@ -3,60 +3,10 @@
 #include <cstdio>   
 #include <string>
 #include <unordered_map>
+#include "truba.h"
+#include "CS.h"
+#include "Utils.h"
 using namespace std;
-struct truba {
-	string name;
-	double length;
-	int diameter;
-	bool under_repair;
-};
-struct CS {
-	string name;
-	int workshop;
-	int workshop_on;
-	char efficiency;
-};
-template <typename T>
-T GetCorrectNumber(T min, T max)
-{
-	T a;
-	while ((cin >> a).fail() || a < min || a > max || cin.peek() != '\n')
-	{
-		cin.clear();
-		cin.ignore(1000, '\n');
-		cout << "Type number (" "from" << " " << min << " " << "to" << " " << max << "): ";
-	}
-	return a;
-}
-istream& operator >> (istream& in, truba& tr)
-{
-	cout << "Type name: ";
-	in >> ws;
-	getline(in, tr.name);
-	cout << "Type length: ";
-	tr.length = GetCorrectNumber(0.0, 1000000.0);
-	cout << "Type diameter: ";
-	tr.diameter = GetCorrectNumber(0, 1000000);
-	cout << "Under repair? (1 - Yes, 0 - No): ";
-	tr.under_repair = GetCorrectNumber(0,1);
-	return in;
-}
-ostream& operator << (ostream& out, const truba& tr)
-{
-	if (tr.name.empty())
-	{
-		out << "You don't have the pipe.\n";
-	}
-	else
-	{
-		out << "Pipe:\n";
-		out << "Name: " << tr.name << endl
-			<< "Length: " << tr.length << endl
-			<< "Diameter: " << tr.diameter << endl
-			<< "Under repair? (1 - Yes, 0 - No): " << tr.under_repair << endl;
-		return out;
-	}
-}
 void Edit_truba(truba& tr)
 {
 	if (!tr.name.empty())
@@ -78,6 +28,7 @@ void Save_truba (ofstream& fout, const truba& tr)
 	else
 	{
 		fout << "Pipe:" << endl;
+		fout << tr.idpipe << endl;
 		fout << tr.name << endl << tr.length << endl << tr.diameter << endl << tr.under_repair << endl;
 		cout << "Pipe successfully saved!" << " " << "Please, check your file." << endl;
 	}
@@ -85,59 +36,27 @@ void Save_truba (ofstream& fout, const truba& tr)
 truba& Download_truba(ifstream& fin, truba& tr)
 {
 	string line;
+	bool dataloaded = false;
 	while (getline(fin, line))
 	{
 		if (line == "Pipe:")
 		{
+			fin >> tr.idpipe;
+			fin.ignore();
 			getline(fin, tr.name);
 			fin >> tr.length >> tr.diameter >> tr.under_repair;
-			if (tr.name.empty())
-			{
-				cout << "You don't have data about the pipe to download\n";
-			}
-			else
+			if (dataloaded == false)
 			{
 				cout << "Your pipe data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
+				dataloaded = true;
 			}
 			return tr;
 		}
 	}
-}
-
-istream& operator >> (istream& in, CS& cs)
-{
-	cout << "Type name: ";
-	in >> ws;
-	getline(in, cs.name);
-	cout << "Type the number of workshops: ";
-	cs.workshop = GetCorrectNumber(1, 1000000);
-	cout << "Type the number of workshops in operation: ";
-	cs.workshop_on = GetCorrectNumber(1, cs.workshop);
-	while (cs.workshop < cs.workshop_on)
+	if (tr.name.empty())
 	{
-		cout << "The number of workshops can't be less then the number of workshops in operation.\n";
-		cout << "Please, try again: ";
-		cs.workshop_on = GetCorrectNumber(1, cs.workshop);
+		cout << "You don't have data about the pipe to download\n";
 	}
-	cout << "Type efficiency (From A to D): ";
-	cs.efficiency = GetCorrectNumber('A', 'D');
-	return in;
-}  
-ostream& operator << (ostream& out, const CS& cs)
-{
-	if (cs.name.empty())
-	{
-		out << "You don't have the compressor station.\n";
-	}
-	else
-	{
-		out << "Compressor station:\n";
-		out << "Name: " << cs.name << endl
-			<< "The number of workshops: " << cs.workshop << endl
-			<< "The number of workshops in operation: " << cs.workshop_on << endl
-			<< "Efficiency: " << cs.efficiency << endl;
-	}
-	return out;
 }
 void Edit_CS(CS& cs)
 {
@@ -168,8 +87,42 @@ void Save_CS(ofstream& fout, const CS& cs)
 	else
 	{
 		fout << "Compressor station:" << endl;
+		fout << cs.idcs << endl;
 		fout << cs.name << endl << cs.workshop << endl << cs.workshop_on << endl << cs.efficiency << endl;
 		cout << "Compressor station successfully saved!" << " " << "Please, check your file." << endl;
+	}
+}
+CS& Download_CS(ifstream& fin, CS& cs)
+{
+	string line;
+	bool dataloaded = false;
+	while (getline(fin, line))
+	{
+		if (line == "Compressor station:")
+		{
+			fin >> cs.idcs;
+			fin.ignore();
+			getline(fin, cs.name);
+			fin >> cs.workshop >> cs.workshop_on >> cs.efficiency;
+			if (dataloaded == false)
+			{
+				cout << "Your compressor station data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
+				dataloaded = true;
+			}
+			return cs;
+		}
+	}
+	if (cs.name.empty())
+	{
+		cout << "You don't have data about the compressor station to download.\n";
+	}
+}
+void Viewall(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) {
+	for (auto& pipe : pipe) {
+		cout << pipe.second << endl;
+	}
+	for (auto& cs : ks) {
+		cout << cs.second << endl;
 	}
 }
 void ClearFile()
@@ -180,45 +133,10 @@ void ClearFile()
 		file.close();
 	}
 }
-CS& Download_CS(ifstream& fin, CS& cs)
-{
-	string line;
-	while (getline(fin, line))
-	{
-		if (line == "Compressor station:")
-		{
-			getline(fin, cs.name);
-			fin >> cs.workshop >> cs.workshop_on >> cs.efficiency;
-			if (cs.name.empty())
-			{
-				cout << "You don't have data about the compressor station to download.\n";
-			}
-			else
-			{
-				cout << "Your compressor station data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
-			}
-			return cs;
-		}
-	}
-}
-truba& SelectTruba (unordered_map<int, truba>& p) 
-{
-	cout << "Enter index for your pipe: ";
-	unsigned int index = GetCorrectNumber(0u, unsigned int(p.size() - 1));
-	return p[index];
-}
-CS& SelectCS(unordered_map<int, CS>& c)
-{
-	cout << "Enter index for your compressor station: ";
-	unsigned int index = GetCorrectNumber(0u, unsigned int(c.size()-1));
-	return c[index];
-}
 int main()
 {
 	truba tr1;
 	CS cs1;
-	int max_id_cs = 0;
-	int max_id_truba = 0;
 	unordered_map<int, truba> pipe;
 	unordered_map<int, CS> ks;
 	while (true) {
@@ -238,17 +156,14 @@ int main()
 		switch (GetCorrectNumber(0,7)) {
 		case 1:
 			cin >> tr1;
-			pipe.insert({max_id_truba++, tr1});
+			pipe.insert({tr1.get_idp(), tr1});
 			break;
 		case 2:
 			cin >> cs1;
-			ks.insert({max_id_cs++, cs1});
+			ks.insert({cs1.get_idc(), cs1});
 			break;
 		case 3:
-			cout << "You have" << " " << max_id_truba <<  " " << "pipes!" << endl;;
-			cout << SelectTruba(pipe) << endl;
-			cout << "You have" << " " << max_id_cs << " " << "compressor stations!" << endl;
-			cout << SelectCS(ks) << endl;
+			Viewall(pipe, ks);
 			break;
 		case 4:
 			Edit_truba(tr1);
@@ -283,9 +198,13 @@ int main()
 					int count_pipe, count_cs;
 					fin >> count_pipe >> count_cs;
 					while (count_pipe--)
-						pipe.insert({max_id_truba++ , Download_truba(fin, tr1)});
+						pipe.insert({tr1.get_idp(), Download_truba(fin, tr1)});
+						if (truba::max_id_truba < tr1.get_idp())
+							truba::max_id_truba = tr1.get_idp();
 					while (count_cs--)
-						ks.insert({ max_id_cs++ , Download_CS(fin, cs1)});
+						ks.insert({cs1.get_idc(), Download_CS(fin, cs1)});
+						if (CS::max_id_cs < cs1.get_idc())
+							CS::max_id_cs = cs1.get_idc();
 					fin.close();
 				}
 			}
