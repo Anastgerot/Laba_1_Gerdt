@@ -108,10 +108,6 @@ CS& Download_CS(ifstream& fin, CS& cs)
 			return cs;
 		}
 	}
-	//if (cs.name.empty())
-	//{
-	//	cout << "You don't have data about the compressor station to download.\n";
-	//}
 }
 void Viewall(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) {
 	for (auto& pipe : pipe) {
@@ -143,24 +139,34 @@ void Addcs()
 }
 void Save_objects()
 {
-	ofstream fout;
+	string filename;
+	cout << "Enter the name of your file(with.txt extension) : ";
+	cin >> filename;
 	ClearFile();
-	fout.open("both.txt", ios::app);
+	ofstream fout;
+	fout.open(filename, ios::app);
 	if (fout.is_open())
 	{
-		fout << pipe.size() << " " << ks.size() << endl;
+		fout << pipe.size() << " " << ks.size() << std::endl;
 		for (const auto& tr : pipe)
 			Save_truba(fout, tr.second);
 		for (const auto& cs : ks)
 			Save_CS(fout, cs.second);
 		fout.close();
 	}
+	else
+	{
+		std::cout << "Failed to open the file." << std::endl;
+	}
 }
 void Load_Download()
 {
 	int count_pipe, count_cs;
 	ifstream fin;
-	fin.open("both.txt", ios::in);
+	string filename;
+	cout << "Enter the name of the file to load (with .txt extension): ";
+	cin >> filename;
+	fin.open(filename, ios::in);
 	if (fin.is_open())
 	{
 		pipe.clear();
@@ -175,6 +181,10 @@ void Load_Download()
 			ks.insert({ cs1.get_idc(), Download_CS(fin, cs1) });
 		}
 		fin.close();
+	}
+	else
+	{
+		std::cout << "Failed to open the file for loading." << std::endl;
 	}
 }
 int Find_under_repair_pipe(bool pipe_under_repair) 
@@ -332,7 +342,6 @@ int main()
 		cout << "9. Choose compressor station with the filter\n";
 		cout << "0. Exit\n";
 		cout << "Selection: ";
-		fstream both_file("both.txt");
 		switch (GetCorrectNumber(0,9)) {
 		case 1:
 			Addpipe();
@@ -353,15 +362,7 @@ int main()
 			Save_objects();
 			break;
 		case 7:
-			if (both_file.peek() == EOF)
-			{
-				cout << "File is empty!" << " " << "Please, check your data about your objects!!!" << endl;
-				both_file.close();
-			}
-			else
-			{
-				Load_Download();
-			}
+			Load_Download();
 			break;
 		case 8:
 			Filter_pipe();
