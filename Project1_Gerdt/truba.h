@@ -5,11 +5,11 @@ class truba
 {
 private:
 	int idpipe = 0;
-	string name = "";
 	double length = 0;
 	int diameter = 0;
-	bool under_repair = false;
 public:
+	string name = "";
+	bool under_repair = false;
 	static int max_id_truba;
 	friend ostream& operator << (ostream& out, const truba& tr);
 	friend istream& operator >> (istream& in, truba& tr);

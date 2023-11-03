@@ -5,11 +5,11 @@ class CS
 {
 private:
 	int idcs = 0;
+	char efficiency = 'A';
+public:
 	string name = "";
 	int workshop = 0;
 	int workshop_on = 0;
-	char efficiency = 'A';
-public:
 	static int max_id_cs;
 	friend istream& operator >> (istream& in, CS& cs);
 	friend ostream& operator << (ostream& out, const CS& cs);
