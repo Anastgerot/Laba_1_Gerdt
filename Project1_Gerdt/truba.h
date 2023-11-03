@@ -4,11 +4,11 @@ using namespace std;
 class truba
 {
 private:
-	int idpipe;
-	string name;
-	double length;
-	int diameter;
-	bool under_repair;
+	int idpipe = 0;
+	string name = "";
+	double length = 0;
+	int diameter = 0;
+	bool under_repair = false;
 public:
 	static int max_id_truba;
 	friend ostream& operator << (ostream& out, const truba& tr);

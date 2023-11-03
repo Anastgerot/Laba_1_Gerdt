@@ -7,6 +7,8 @@
 #include "CS.h"
 #include "Utils.h"
 using namespace std;
+unordered_map<int, truba> pipe;
+unordered_map<int, CS> ks;
 void Edit_truba(truba& tr)
 {
 	if (!tr.name.empty())
@@ -28,7 +30,6 @@ void Save_truba (ofstream& fout, const truba& tr)
 	else
 	{
 		fout << "Pipe:" << endl;
-		fout << tr.idpipe << endl;
 		fout << tr.name << endl << tr.length << endl << tr.diameter << endl << tr.under_repair << endl;
 		cout << "Pipe successfully saved!" << " " << "Please, check your file." << endl;
 	}
@@ -41,8 +42,6 @@ truba& Download_truba(ifstream& fin, truba& tr)
 	{
 		if (line == "Pipe:")
 		{
-			fin >> tr.idpipe;
-			fin.ignore();
 			getline(fin, tr.name);
 			fin >> tr.length >> tr.diameter >> tr.under_repair;
 			if (dataloaded == false)
@@ -53,10 +52,10 @@ truba& Download_truba(ifstream& fin, truba& tr)
 			return tr;
 		}
 	}
-	if (tr.name.empty())
-	{
-		cout << "You don't have data about the pipe to download\n";
-	}
+	//if (tr.name.empty())
+	//{
+	//	cout << "You don't have data about the pipe to download\n";
+	//}
 }
 void Edit_CS(CS& cs)
 {
@@ -87,7 +86,6 @@ void Save_CS(ofstream& fout, const CS& cs)
 	else
 	{
 		fout << "Compressor station:" << endl;
-		fout << cs.idcs << endl;
 		fout << cs.name << endl << cs.workshop << endl << cs.workshop_on << endl << cs.efficiency << endl;
 		cout << "Compressor station successfully saved!" << " " << "Please, check your file." << endl;
 	}
@@ -100,8 +98,6 @@ CS& Download_CS(ifstream& fin, CS& cs)
 	{
 		if (line == "Compressor station:")
 		{
-			fin >> cs.idcs;
-			fin.ignore();
 			getline(fin, cs.name);
 			fin >> cs.workshop >> cs.workshop_on >> cs.efficiency;
 			if (dataloaded == false)
@@ -112,10 +108,10 @@ CS& Download_CS(ifstream& fin, CS& cs)
 			return cs;
 		}
 	}
-	if (cs.name.empty())
-	{
-		cout << "You don't have data about the compressor station to download.\n";
-	}
+	//if (cs.name.empty())
+	//{
+	//	cout << "You don't have data about the compressor station to download.\n";
+	//}
 }
 void Viewall(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) {
 	for (auto& pipe : pipe) {
@@ -133,12 +129,41 @@ void ClearFile()
 		file.close();
 	}
 }
-int main()
+void Addpipe()
 {
 	truba tr1;
+	cin >> tr1;
+	pipe.insert({ tr1.get_idp(), tr1 });
+}
+void Addcs()
+{
 	CS cs1;
-	unordered_map<int, truba> pipe;
-	unordered_map<int, CS> ks;
+	cin >> cs1;
+	ks.insert({ cs1.get_idc(), cs1 });
+}
+void Load_Download()
+{
+	int count_pipe, count_cs;
+	ifstream fin;
+	fin.open("both.txt", ios::in);
+	if (fin.is_open())
+	{
+		pipe.clear();
+		ks.clear();
+		fin >> count_pipe >> count_cs;
+		for (int i = 0; i < count_pipe; i++) {
+			truba tr1;
+			pipe.insert({ tr1.get_idp(), Download_truba(fin, tr1) });
+		}
+		for (int i = 0; i < count_cs; i++) {
+			CS cs1;
+			ks.insert({ cs1.get_idc(), Download_CS(fin, cs1) });
+		}
+		fin.close();
+	}
+}
+int main()
+{
 	while (true) {
 		cout << "Choose the number:\n";
 		cout << "1. Add the pipe\n";
@@ -151,25 +176,22 @@ int main()
 		cout << "0. Exit\n";
 		cout << "Selection: ";
 		ofstream fout;
-		ifstream fin;
 		fstream both_file("both.txt");
 		switch (GetCorrectNumber(0,7)) {
 		case 1:
-			cin >> tr1;
-			pipe.insert({tr1.get_idp(), tr1});
+			Addpipe();
 			break;
 		case 2:
-			cin >> cs1;
-			ks.insert({cs1.get_idc(), cs1});
+			Addcs();
 			break;
 		case 3:
 			Viewall(pipe, ks);
 			break;
-		case 4:
-			Edit_truba(tr1);
+		case 4:;
+			//Edit_truba(tr1);
 			break;
 		case 5:
-			Edit_CS(cs1);
+			//Edit_CS(cs1);
 			break;
 		case 6:
 			ClearFile();
@@ -192,21 +214,7 @@ int main()
 			}
 			else
 			{
-				fin.open("both.txt", ios::in);
-				if (fin.is_open())
-				{
-					int count_pipe, count_cs;
-					fin >> count_pipe >> count_cs;
-					while (count_pipe--)
-						pipe.insert({tr1.get_idp(), Download_truba(fin, tr1)});
-						if (truba::max_id_truba < tr1.get_idp())
-							truba::max_id_truba = tr1.get_idp();
-					while (count_cs--)
-						ks.insert({cs1.get_idc(), Download_CS(fin, cs1)});
-						if (CS::max_id_cs < cs1.get_idc())
-							CS::max_id_cs = cs1.get_idc();
-					fin.close();
-				}
+				Load_Download();
 			}
 			break;
 		case 0:
