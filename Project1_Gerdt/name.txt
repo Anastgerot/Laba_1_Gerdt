@@ -1,28 +1,31 @@
-3 0
+4 2
 Pipe:
-pipe 1
-43
+hghg
+34
 32
 1
 Pipe:
-hdgs
+pipe 1
 54
 43
 1
 Pipe:
-dsfaw
+pipe 2
+64
+3
+0
+Pipe:
+pipe 3
 54
-32
-1
-1 0
-Pipe:
-pipe 1
-45
-32
-1
-1 0
-Pipe:
-вк
 43
-32
 1
+Compressor station:
+cs 1
+30
+10
+A
+Compressor station:
+ew
+100
+20
+A

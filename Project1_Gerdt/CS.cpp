@@ -43,3 +43,4 @@ ostream& operator << (ostream& out, const CS& cs)
 	}
 	return out;
 }
+
