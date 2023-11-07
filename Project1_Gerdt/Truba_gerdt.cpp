@@ -9,18 +9,37 @@
 using namespace std;
 unordered_map<int, truba> pipe;
 unordered_map<int, CS> ks;
+void Log(const string& message) 
+{
+	ofstream logFile("log.txt", ios::app);
+	if (logFile.is_open()) 
+	{
+		logFile << message << endl;
+		logFile.close();
+	}
+	cout << message << endl;
+}
+void Log_cin(const string& message)
+{
+	ofstream logFile("log.txt", ios::app);
+	if (logFile.is_open())
+	{
+		logFile << message << endl;
+		logFile.close();
+	}
+}
 void Edit_truba()
 {
 	int number_pipes;
 	int pipe_size = pipe.size();
 	if (pipe_size == 0)
 	{
-		cout << "You don't have any pipes" << endl;
+		Log("You don't have any pipes to edit");
 	}
 	else
 	{
-		cout << "Enter the number of pipes you want to edit: ";
-		number_pipes = GetCorrectNumber(0, pipe_size);
+		Log("Enter the number of pipes you want to edit: ");
+		Log_cin(to_string(number_pipes = GetCorrectNumber(0, pipe_size)));
 		if (number_pipes == pipe_size)
 		{
 			for (int i = 0; i < number_pipes; i++)
@@ -29,24 +48,20 @@ void Edit_truba()
 				tr.under_repair = !tr.under_repair;
 
 			}
-			cout << "The status of all your pipes has been successfully changed." << endl;
+			Log("The status of all your pipes has been successfully changed.");
 		}
 		else
 		{
 			for (int i = 0; i < number_pipes; i++)
 			{
 				int choose_pipe;
-				cout << "Enter the ID of the pipe you want to change: ";
-				cin >> choose_pipe;
+				Log("Enter the ID of the pipe you want to change: ");
+				Log_cin(to_string(choose_pipe = GetCorrectNumber(0, truba::max_id_truba - 1)));
 				if (choose_pipe >= 0 && choose_pipe < pipe_size)
 				{
 					truba& tr = pipe[choose_pipe];
 					tr.under_repair = !tr.under_repair;
-					cout << "The status of pipe " << choose_pipe << " has been successfully changed." << endl;
-				}
-				else
-				{
-					cout << "Invalid pipe ID for pipe " << choose_pipe << ". Please enter a valid ID." << endl;
+					Log("The status of pipe " + to_string(choose_pipe) + " has been successfully changed.");
 				}
 			}
 		}
@@ -56,30 +71,23 @@ void Save_truba (ofstream& fout, const truba& tr)
 {
 	if (tr.name.empty())
 	{
-		cout << "You don't have the pipe to save\n";
+		Log("You don't have the pipe to save");
 	}
 	else
 	{
 		fout << "Pipe:" << endl;
 		fout << tr.name << endl << tr.length << endl << tr.diameter << endl << tr.under_repair << endl;
-		cout << "Pipe successfully saved!" << " " << "Please, check your file." << endl;
 	}
 }
 truba& Download_truba(ifstream& fin, truba& tr)
 {
 	string line;
-	bool dataloaded = false;
 	while (getline(fin, line))
 	{
 		if (line == "Pipe:")
 		{
 			getline(fin, tr.name);
 			fin >> tr.length >> tr.diameter >> tr.under_repair;
-			if (dataloaded == false)
-			{
-				cout << "Your pipe data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
-				dataloaded = true;
-			}
 			return tr;
 		}
 	}
@@ -90,27 +98,27 @@ void Edit_CS()
 	int cs_size = ks.size();
 	if (cs_size == 0)
 	{
-		cout << "You don't have any compressor stations" << endl;
+		Log("You don't have any compressor stations");
 	}
 	else
 	{
-		cout << "Enter the number of compressor stations you want to edit: ";
-		number_cs = GetCorrectNumber(0, cs_size);
+		Log("Enter the number of compressor stations you want to edit:");
+		Log_cin(to_string(number_cs = GetCorrectNumber(0, cs_size)));
 		if (number_cs == cs_size)
 		{
 			for (int i = 0; i < number_cs; i++)
 			{
 				CS& cs = ks[i];
-				cout << "The number of workshops: " << " " << cs.workshop << endl;
-				cout << "Type the new number of workshops in operation: ";
-				cs.workshop_on = GetCorrectNumber(1, cs.workshop);
+				Log("The number of workshops: " + to_string(cs.workshop));
+				Log("Type the new number of workshops in operation:");
+				Log_cin(to_string(cs.workshop_on = GetCorrectNumber(1, cs.workshop)));
 				while (cs.workshop < cs.workshop_on)
 				{
-					cout << "The number of workshops can't be less then the number of workshops in operation.\n";
-					cout << "Please, try again: ";
-					cs.workshop_on = GetCorrectNumber(1, cs.workshop);
+					Log("The number of workshops can't be less then the number of workshops in operation.");
+					Log("Please, try again: ");
+					Log_cin(to_string(cs.workshop_on = GetCorrectNumber(1, cs.workshop)));
 				}
-				cout << "Your new data for all of your compressor stations has been successfully modified.\n";
+				Log("Your new data for all of your compressor stations has been successfully modified.");
 
 			}
 		}
@@ -119,21 +127,21 @@ void Edit_CS()
 			for (int i = 0; i < number_cs; i++)
 			{
 				int choose_cs;
-				cout << "Enter the ID of the compressor stations you want to change: ";
-				cin >> choose_cs;
+				Log("Enter the ID of the compressor stations you want to change:");
+				Log_cin(to_string(choose_cs = GetCorrectNumber(0, CS::max_id_cs-1)));
 				if (choose_cs >= 0 && choose_cs < cs_size)
 				{
 					CS& cs = ks[choose_cs];
-					cout << "The number of workshops: " << " " << cs.workshop << endl;
-					cout << "Type the new number of workshops in operation: ";
-					cs.workshop_on = GetCorrectNumber(1, cs.workshop);
+					Log("The number of workshops: " + to_string(cs.workshop));
+					Log("Type the new number of workshops in operation:");
+					Log_cin(to_string(cs.workshop_on = GetCorrectNumber(1, cs.workshop)));
 					while (cs.workshop < cs.workshop_on)
 					{
-						cout << "The number of workshops can't be less then the number of workshops in operation.\n";
-						cout << "Please, try again: ";
-						cs.workshop_on = GetCorrectNumber(1, cs.workshop);
+						Log("The number of workshops can't be less then the number of workshops in operation.");
+						Log("Please, try again: ");
+						Log_cin(to_string(cs.workshop_on = GetCorrectNumber(1, cs.workshop)));
 					}
-					cout << "The status of compressor station " << choose_cs << " has been successfully changed." << endl;
+					Log("The status of compressor station " + to_string(choose_cs) + " has been successfully changed.");
 				}
 			}
 		}
@@ -150,36 +158,30 @@ void Save_CS(ofstream& fout, const CS& cs)
 	{
 		fout << "Compressor station:" << endl;
 		fout << cs.name << endl << cs.workshop << endl << cs.workshop_on << endl << cs.efficiency << endl;
-		cout << "Compressor station successfully saved!" << " " << "Please, check your file." << endl;
 	}
 }
 CS& Download_CS(ifstream& fin, CS& cs)
 {
 	string line;
-	bool dataloaded = false;
 	while (getline(fin, line))
 	{
 		if (line == "Compressor station:")
 		{
 			getline(fin, cs.name);
 			fin >> cs.workshop >> cs.workshop_on >> cs.efficiency;
-			if (dataloaded == false)
-			{
-				cout << "Your compressor station data has been successfully download!" << " " << " Press 3 to check your objects. " << endl;
-				dataloaded = true;
-			}
 			return cs;
 		}
 	}
 }
-void Viewall(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) 
+void Viewall() 
 {
 	if (pipe.size() == 0 && ks.size() == 0)
 	{
-		cout << "You don't have any objects" << endl;
+		Log("You don't have any objects to see");
 	}
 	else
 	{
+		Log("It is all of your objects:");
 		for (auto& pipe : pipe) {
 			cout << pipe.second << endl;
 		}
@@ -202,29 +204,36 @@ void Addcs()
 }
 void Save_objects()
 {
-	if (pipe.size() == 0 && ks.size() == 0)
+	if (pipe.empty() && ks.empty())
 	{
-		cout << "You don't have any objects" << endl;
+		Log("You don't have any objects to save");
 	}
 	else
 	{
 		string filename;
-		cout << "Enter the name of your file: ";
+		Log("Enter the name of your file: ");
 		cin >> filename;
+		Log(filename);
 		ofstream fout;
 		fout.open((filename + ".txt"), ios::trunc);
 		if (fout.is_open())
 		{
 			fout << pipe.size() << " " << ks.size() << endl;
 			for (const auto& tr : pipe)
+			{
 				Save_truba(fout, tr.second);
+				Log("Pipe with ID " + to_string(tr.first) + " successfully saved! Please, check your file.");
+			}
 			for (const auto& cs : ks)
+			{
 				Save_CS(fout, cs.second);
+				Log("CS with ID " + to_string(cs.first) + " successfully saved! Please, check your file.");
+			}
 			fout.close();
 		}
 		else
 		{
-			std::cout << "Failed to open the file." << endl;
+			Log("Failed to open the file with name " + filename + " to save.");
 		}
 	}
 }
@@ -234,12 +243,13 @@ void Load_Download()
 	int count_cs = 0;
 	ifstream fin;
 	string filename;
-	cout << "Enter the name of the file to load: ";
+	Log("Enter the name of the file to load: ");
 	cin >> filename;
+	Log_cin(filename);
 	fin.open((filename + ".txt"), ios::in);
 	if (!fin.is_open()) 
 	{
-		cout << "Failed to open the file for loading." << endl;
+		Log("Failed to open the file with name " + filename + " for loading.");
 	}
 	else {
 		pipe.clear();
@@ -247,7 +257,7 @@ void Load_Download()
 		fin >> count_pipe >> count_cs;
 		if (count_pipe == 0 && count_cs == 0) 
 		{
-			cout << "You don't have objects to download" << endl;
+			Log("You don't have objects to download");
 		}
 		else 
 		{
@@ -255,11 +265,13 @@ void Load_Download()
 			{
 				truba tr1;
 				pipe.insert({ tr1.get_idp(), Download_truba(fin, tr1) });
+				Log("Your pipe with ID " + to_string(tr1.get_idp()) + " has been successfully download! Press 3 to check your objects. ");
 			}
 			for (int i = 0; i < count_cs; i++) 
 			{
 				CS cs1;
 				ks.insert({ cs1.get_idc(), Download_CS(fin, cs1) });
+				Log("Your compressor station with ID " + to_string(cs1.get_idc()) + " has been successfully download! Press 3 to check your objects. ");
 			}
 		}
 		fin.close();
@@ -325,123 +337,127 @@ void Filter() {
 	vector<int> matching_pipes;
 	vector<int> matching_cs;
 
-	cout << "Select objects to use filter:" << endl;
-	cout << "1. Use filter for pipes" << endl;
-	cout << "2. Use filter for compressor stations" << endl;
-	cout << "Enter your choice: ";
-	switch (GetCorrectNumber(1, 2)) 
+	Log("Select objects to use filter:");
+	Log("1. Use filter for pipes");
+	Log("2. Use filter for compressor stations");
+	Log("Enter your choice: ");
+	choice = GetCorrectNumber(0, 9);
+	Log_cin(to_string(choice));
+	switch (choice)
 	{
-	case 1: 
+	case 1:
 		int pipe_id;
-		cout << "Write the filter (name or under_repair): ";
+		Log("Write the filter (name or under_repair): ");
 		cin >> filter;
-		if (filter == "name") 
+		Log_cin(filter);
+		if (filter == "name")
 		{
 			string pipe_name;
-			cout << "Enter the name of the pipe to find: ";
+			Log("Enter the name of the pipe to find: ");
 			cin.ignore();
 			getline(cin, pipe_name);
-			for (const auto& pipe_entry : pipe) 
+			for (const auto& pipe_entry : pipe)
 			{
 				const truba& tr = pipe_entry.second;
-				if (tr.name.find(pipe_name) != string::npos) 
+				if (tr.name.find(pipe_name) != string::npos)
 				{
 					matching_pipes.push_back(pipe_entry.first);
 				}
 			}
 
-			if (!matching_pipes.empty()) 
+			if (!matching_pipes.empty())
 			{
-				cout << "Pipes found: ";
-				for (int pipe_id : matching_pipes) 
+				Log("Pipes found: ");
+				for (int pipe_id : matching_pipes)
 				{
 					cout << pipe[pipe_id] << endl;
 				}
-				cout << endl;
 			}
 			else {
-				cout << "No pipes with the specified name found." << endl;
+				Log("No pipes with the specified name found.");
 			}
 		}
-		else if (filter == "under_repair") 
+		else if (filter == "under_repair")
 		{
 			bool isUnderRepair;
-			cout << "Enter the status 'under_repair' (1 for true, 0 for false): ";
+			Log("Enter the status 'under_repair' (1 for true, 0 for false): ");
 			cin >> isUnderRepair;
+			Log_cin(to_string(isUnderRepair));
 			pipe_id = Find_under_repair_pipe(isUnderRepair);
 			if (pipe_id != -1)
 			{
-				cout << "Pipe found with ID: " << pipe[pipe_id] << endl;
+				Log("Pipe found with ID: ");
+				cout << pipe[pipe_id] << endl;
 			}
 			else
 			{
-				cout << "No pipe with the specified 'under_repair' status found." << endl;
+				Log("No pipe with the specified 'under_repair' status found.");
 			}
 		}
 		else
 		{
-			cout << "Invalid filter entered, press 8 and try again" << endl;
+			Log("Invalid filter entered, press 8 and try again");
 		}
 		break;
 
 	case 2:
 		int cs_id;
-		cout << "Write the filter (name or procent): ";
+		Log("Write the filter (name or procent): ");
 		cin >> filter;
 
-		if (filter == "name") 
+		if (filter == "name")
 		{
 			string cs_name;
-			cout << "Enter the name of the compressor station to find: ";
+			Log("Enter the name of the compressor station to find: ");
 			cin.ignore();
 			getline(cin, cs_name);
 
-			for (const auto& cs_entry : ks) 
+			for (const auto& cs_entry : ks)
 			{
 				const CS& cs = cs_entry.second;
-				if (cs.name.find(cs_name) != string::npos) 
+				if (cs.name.find(cs_name) != string::npos)
 				{
 					matching_cs.push_back(cs_entry.first);
 				}
 			}
 
-			if (!matching_cs.empty()) 
+			if (!matching_cs.empty())
 			{
-				cout << "Compressor stations found: ";
-				for (int cs_id : matching_cs) 
+				Log("Compressor stations found: ");
+				for (int cs_id : matching_cs)
 				{
 					cout << ks[cs_id] << endl;
 				}
-				cout << endl;
+				Log("");  // Add an empty line for separation.
 			}
 			else {
-				cout << "No compressor stations with the specified name found." << endl;
+				Log("No compressor stations with the specified name found.");
 			}
 		}
-		else if (filter == "procent") 
+		else if (filter == "procent")
 		{
-			cout << "Enter the percentage to find: ";
+			Log("Enter the percentage to find: ");
 			string cs_procent;
 			cin >> cs_procent;
 			int cs_id = Find_procent_cs(cs_procent);
 			if (cs_id != -1)
 			{
-				cout << "Compressor station found with ID: " << ks[cs_id] << endl;
+				Log("Compressor station found with ID: ");
+				cout << ks[cs_id] << endl;
 			}
 			else
 			{
-				cout << "Compressor station with the specified percentage not found." << endl;
+				Log("Compressor station with the specified percentage not found.");
 			}
-
 		}
 		else
 		{
-			cout << "Invalid filter entered, press 9 and try again" << endl;
+			Log("Invalid filter entered, press 9 and try again");
 		}
 		break;
 
 	default:
-		cout << "Invalid choice. Please enter 1 or 2." << endl;
+		Log("Invalid choice. Please enter 1 or 2.");
 		break;
 	}
 }
@@ -452,44 +468,45 @@ void Delete_objects()
 	int number_cs;
 	int pipe_size = pipe.size();
 	int cs_size = ks.size();
-	cout << "Select objects to delete:" << endl;
-	cout << "1. Delete pipes" << endl;
-	cout << "2. Delete compressor stations" << endl;
-	cout << "Enter your choice: ";
-	choice = GetCorrectNumber(1, 2);
 
+	Log("Select objects to delete:");
+	Log("1. Delete pipes");
+	Log("2. Delete compressor stations");
+	Log("Enter your choice: ");
+	choice = GetCorrectNumber(0, 9);
+	Log_cin(to_string(choice));
 	switch (choice)
 	{
 	case 1:
 		if (pipe_size == 0)
 		{
-			cout << "You don't have pipes to delete" << endl;
+			Log("You don't have pipes to delete");
 		}
 		else
 		{
-			cout << "Enter the number of pipes you want to delete: ";
+			Log("Enter the number of pipes you want to delete: ");
 			number_pipes = GetCorrectNumber(0, pipe_size);
 			if (number_pipes == pipe_size)
 			{
 				pipe.clear();
-				cout << "All of your pipes have been successfully deleted" << endl;
+				Log("All of your pipes have been successfully deleted");
 			}
 			else
 			{
 				for (int i = 0; i < number_pipes; i++)
 				{
 					int choose_pipe;
-					cout << "Enter the ID of the pipe you want to delete: ";
+					Log("Enter the ID of the pipe you want to delete: ");
 					cin >> choose_pipe;
 					auto it = pipe.find(choose_pipe);
 					if (it != pipe.end())
 					{
 						pipe.erase(it);
-						cout << "Pipe with ID " << choose_pipe << " has been deleted." << endl;
+						Log("Pipe with ID " + to_string(choose_pipe) + " has been deleted.");
 					}
 					else
 					{
-						cout << "Pipe with ID " << choose_pipe << " not found." << endl;
+						Log("Pipe with ID " + to_string(choose_pipe) + " not found.");
 					}
 				}
 			}
@@ -499,34 +516,34 @@ void Delete_objects()
 	case 2:
 		if (cs_size == 0)
 		{
-			cout << "You don't have compressor stations to delete" << endl;
+			Log("You don't have compressor stations to delete");
 		}
 		else
 		{
-			cout << "Enter the number of compressor stations you want to delete: ";
+			Log("Enter the number of compressor stations you want to delete: ");
 			number_cs = GetCorrectNumber(0, cs_size);
 			if (number_cs == cs_size)
 			{
 				ks.clear();
-				cout << "All of your compressor stations have been successfully deleted" << endl;
+				Log("All of your compressor stations have been successfully deleted");
 			}
 			else
 			{
 				for (int i = 0; i < number_cs; i++)
 				{
 					int choose_cs;
-					cout << "Enter the ID of the compressor station you want to delete: ";
+					Log("Enter the ID of the compressor station you want to delete: ");
 					cin >> choose_cs;
 
 					auto it = ks.find(choose_cs);
 					if (it != ks.end())
 					{
 						ks.erase(it);
-						cout << "Compressor station with ID " << choose_cs << " has been deleted." << endl;
+						Log("Compressor station with ID " + to_string(choose_cs) + " has been deleted.");
 					}
 					else
 					{
-						cout << "Compressor station with ID " << choose_cs << " not found." << endl;
+						Log("Compressor station with ID " + to_string(choose_cs) + " not found.");
 					}
 				}
 			}
@@ -534,7 +551,7 @@ void Delete_objects()
 		break;
 
 	default:
-		cout << "Invalid choice. Please enter 1 or 2." << endl;
+		Log("Invalid choice. Please enter 1 or 2.");
 		break;
 	}
 }
@@ -542,19 +559,22 @@ int main()
 {
 	while (true) 
 	{
-		cout << "Choose the number:\n";
-		cout << "1. Add the pipe\n";
-		cout << "2. Add the compressor station\n";
-		cout << "3. View all objects\n";
-		cout << "4. Edit the status 'under repair'\n";
-		cout << "5. Edit the compressor station\n";
-		cout << "6. Save\n";
-		cout << "7. Download\n";
-		cout << "8. Choose objects with the filter\n";
-		cout << "9. Delete the object\n";
-		cout << "0. Exit\n";
-		cout << "Selection: ";
-		switch (GetCorrectNumber(0,9)) 
+		int choice;
+		Log("Choose the number:");
+		Log("1. Add the pipe");
+		Log("2. Add the compressor station");
+		Log("3. View all objects");
+		Log("4. Edit the status 'under repair'");
+		Log("5. Edit the compressor station");
+		Log("6. Save");
+		Log("7. Download");
+		Log("8. Choose objects with the filter");
+		Log("9. Delete the object");
+		Log("0. Exit");
+		Log("Selection: ");
+		choice = GetCorrectNumber(0, 9);
+		Log_cin(to_string(choice));
+		switch (choice) 
 		{
 		case 1:
 			Addpipe();
@@ -563,7 +583,7 @@ int main()
 			Addcs();
 			break;
 		case 3:
-			Viewall(pipe, ks);
+			Viewall();
 			break;
 		case 4:
 			Edit_truba();

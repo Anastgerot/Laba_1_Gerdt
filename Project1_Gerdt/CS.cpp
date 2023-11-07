@@ -39,7 +39,7 @@ ostream& operator << (ostream& out, const CS& cs)
 			<< "The number of workshops: " << cs.workshop << endl
 			<< "The number of workshops in operation: " << cs.workshop_on << endl
 			<< "Efficiency: " << cs.efficiency << endl
-			<< CS::max_id_cs << endl;
+			<< "Max_id: " << CS::max_id_cs << endl;
 	}
 	return out;
 }
