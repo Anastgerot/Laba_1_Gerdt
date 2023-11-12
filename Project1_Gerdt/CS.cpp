@@ -1,6 +1,9 @@
 #include "CS.h"
 #include "Utils.h"
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <string>
 int CS::max_id_cs = 0;
 CS::CS()
 {
@@ -42,5 +45,30 @@ ostream& operator << (ostream& out, const CS& cs)
 			<< "Max_id: " << CS::max_id_cs << endl;
 	}
 	return out;
+}
+void Save_CS(ofstream& fout, const CS& cs)
+{
+	if (cs.name.empty())
+	{
+		cout << "You don't have the compressor station to save.\n";
+	}
+	else
+	{
+		fout << "Compressor station:" << endl;
+		fout << cs.name << endl << cs.workshop << endl << cs.workshop_on << endl << cs.efficiency << endl;
+	}
+}
+CS& Download_CS(ifstream& fin, CS& cs)
+{
+	string line;
+	while (getline(fin, line))
+	{
+		if (line == "Compressor station:")
+		{
+			getline(fin, cs.name);
+			fin >> cs.workshop >> cs.workshop_on >> cs.efficiency;
+			return cs;
+		}
+	}
 }
 

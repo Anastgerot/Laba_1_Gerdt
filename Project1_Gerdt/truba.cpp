@@ -1,9 +1,11 @@
 #include "truba.h"
 #include "Utils.h"
+#include <iostream>
+#include <fstream>
 #include <string>
 using namespace std;
 int truba::max_id_truba = 0;
-truba::truba() 
+truba::truba()
 {
 	idpipe = max_id_truba++;
 }
@@ -36,5 +38,30 @@ ostream& operator << (ostream& out, const truba& tr)
 			<< "Under repair? (1 - Yes, 0 - No): " << tr.under_repair << endl
 			<< "Max_id: " << truba::max_id_truba << endl;
 		return out;
+	}
+}
+void Save_truba(ofstream& fout, const truba& tr)
+{
+	if (tr.name.empty())
+	{
+		Log("You don't have the pipe to save");
+	}
+	else
+	{
+		fout << "Pipe:" << endl;
+		fout << tr.name << endl << tr.length << endl << tr.diameter << endl << tr.under_repair << endl;
+	}
+}
+truba& Download_truba(ifstream& fin, truba& tr)
+{
+	string line;
+	while (getline(fin, line))
+	{
+		if (line == "Pipe:")
+		{
+			getline(fin, tr.name);
+			fin >> tr.length >> tr.diameter >> tr.under_repair;
+			return tr;
+		}
 	}
 }
