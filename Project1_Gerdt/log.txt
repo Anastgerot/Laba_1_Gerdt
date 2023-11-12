@@ -1,0 +1,65 @@
+Choose the number:
+1. Add the pipe
+2. Add the compressor station
+3. View all objects
+4. Save
+5. Download
+6. Choose and Edit objects with the filter
+0. Exit
+Selection: 
+1
+Choose the number:
+1. Add the pipe
+2. Add the compressor station
+3. View all objects
+4. Save
+5. Download
+6. Choose and Edit objects with the filter
+0. Exit
+Selection: 
+4
+Enter the name of your file: 
+try
+Pipe with ID 0 successfully saved! Please, check your file.
+Choose the number:
+1. Add the pipe
+2. Add the compressor station
+3. View all objects
+4. Save
+5. Download
+6. Choose and Edit objects with the filter
+0. Exit
+Selection: 
+5
+Enter the name of the file to load: 
+try
+Your pipe with ID 1 has been successfully download! Press 3 to check your objects. 
+Choose the number:
+1. Add the pipe
+2. Add the compressor station
+3. View all objects
+4. Save
+5. Download
+6. Choose and Edit objects with the filter
+0. Exit
+Selection: 
+3
+It is all of your objects:
+Choose the number:
+1. Add the pipe
+2. Add the compressor station
+3. View all objects
+4. Save
+5. Download
+6. Choose and Edit objects with the filter
+0. Exit
+Selection: 
+Choose the number:
+1. Add the pipe
+2. Add the compressor station
+3. View all objects
+4. Save
+5. Download
+6. Choose and Edit objects with the filter
+0. Exit
+Selection: 

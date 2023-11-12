@@ -13,7 +13,6 @@ public:
 	static int max_id_truba;
 	friend ostream& operator << (ostream& out, const truba& tr);
 	friend istream& operator >> (istream& in, truba& tr);
-
 	friend void Save_truba(ofstream& fout, const truba& tr);
 	friend truba& Download_truba(ifstream& fin, truba& tr);
 	truba();

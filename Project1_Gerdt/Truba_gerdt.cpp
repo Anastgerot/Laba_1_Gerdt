@@ -2,7 +2,7 @@
 #include <fstream>
 #include <string>
 #include <unordered_map>
-#include <vector> 
+#include <set> 
 #include "truba.h"
 #include "CS.h"
 #include "Utils.h"
@@ -112,8 +112,8 @@ void Load_Download() {
 void Filter() {
 	int choice;
 	string filter;
-	vector<int> matching_pipes;
-	vector<int> matching_cs;
+	set<int> matching_pipes;
+	set<int> matching_cs;
 	while (true) {
 		Log("Select objects to use filter:");
 		Log("1. Use filter for pipes");
@@ -137,7 +137,7 @@ void Filter() {
 				for (const auto& pipe_entry : pipe) {
 					const truba& tr = pipe_entry.second;
 					if (tr.name.find(pipe_name) != string::npos) {
-						matching_pipes.push_back(pipe_entry.first);
+						matching_pipes.insert(pipe_entry.first);
 					}
 				}
 				if (!matching_pipes.empty()) {
@@ -157,7 +157,7 @@ void Filter() {
 				Log_cin(to_string(isUnderRepair));
 				int pipe_id = Find_pipe(pipe, isUnderRepair, Find_under_repair<truba>);
 				if (pipe_id != -1) {
-					matching_pipes.push_back(pipe_id);
+					matching_pipes.insert(pipe_id);
 					Log("Pipe found with ID: ");
 					cout << pipe[pipe_id] << endl;
 				}
@@ -183,7 +183,7 @@ void Filter() {
 				for (const auto& cs_entry : ks) {
 					const CS& cs = cs_entry.second;
 					if (cs.name.find(cs_name) != string::npos) {
-						matching_cs.push_back(cs_entry.first);
+						matching_cs.insert(cs_entry.first);
 					}
 				}
 
@@ -203,7 +203,7 @@ void Filter() {
 				cin >> cs_procent;
 				int cs_id = Find_cs(ks, cs_procent, Find_procent<CS>);
 				if (cs_id != -1) {
-					matching_cs.push_back(cs_id);
+					matching_cs.insert(cs_id);
 					Log("Compressor station found with ID: ");
 					cout << ks[cs_id] << endl;
 				}
