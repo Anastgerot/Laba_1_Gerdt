@@ -20,6 +20,7 @@ istream& operator >> (istream& in, truba& tr)
 	tr.diameter = GetCorrectNumber(0, 1000000);
 	cout << "Under repair? (1 - Yes, 0 - No): ";
 	tr.under_repair = GetCorrectNumber(0, 1);
+	Log("Your pipe successfully entered");
 	return in;
 }
 ostream& operator << (ostream& out, const truba& tr)

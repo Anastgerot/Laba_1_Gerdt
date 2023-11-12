@@ -26,6 +26,7 @@ istream& operator >> (istream& in, CS& cs)
 	}
 	cout << "Type efficiency (From A to D): ";
 	cs.efficiency = GetCorrectNumber('A', 'D');
+	Log("Your compressor station successfully entered");
 	return in;
 }
 ostream& operator << (ostream& out, const CS& cs)
