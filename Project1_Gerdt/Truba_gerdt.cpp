@@ -26,18 +26,6 @@ void Viewall()
 		}
 	}
 }
-void Addpipe()
-{
-	truba tr1;
-	cin >> tr1;
-	pipe.insert({ tr1.get_idp(), tr1 });
-}
-void Addcs()
-{
-	CS cs1;
-	cin >> cs1;
-	ks.insert({ cs1.get_idc(), cs1 });
-}
 void Save_objects()
 {
 	if (pipe.empty() && ks.empty())
@@ -320,10 +308,10 @@ int main()
 		switch (choice)
 		{
 		case 1:
-			Addpipe();
+			Addpipe(pipe);
 			break;
 		case 2:
-			Addcs();
+			Addcs(ks);
 			break;
 		case 3:
 			Viewall();

@@ -65,3 +65,9 @@ truba& Download_truba(ifstream& fin, truba& tr)
 		}
 	}
 }
+void Addpipe(unordered_map<int, truba>& pipe)
+{
+	truba tr1;
+	cin >> tr1;
+	pipe.insert({ tr1.get_idp(), tr1 });
+}

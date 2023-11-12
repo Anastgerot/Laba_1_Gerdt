@@ -63,3 +63,30 @@ Choose the number:
 6. Choose and Edit objects with the filter
 0. Exit
 Selection: 
+Choose the number:
+1. Add the pipe
+2. Add the compressor station
+3. View all objects
+4. Save
+5. Download
+6. Choose and Edit objects with the filter
+0. Exit
+Selection: 
+Choose the number:
+1. Add the pipe
+2. Add the compressor station
+3. View all objects
+4. Save
+5. Download
+6. Choose and Edit objects with the filter
+0. Exit
+Selection: 
+Choose the number:
+1. Add the pipe
+2. Add the compressor station
+3. View all objects
+4. Save
+5. Download
+6. Choose and Edit objects with the filter
+0. Exit
+Selection: 

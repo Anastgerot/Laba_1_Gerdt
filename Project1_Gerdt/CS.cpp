@@ -71,4 +71,9 @@ CS& Download_CS(ifstream& fin, CS& cs)
 		}
 	}
 }
-
+void Addcs(unordered_map<int, CS>& ks)
+{
+	CS cs1;
+	cin >> cs1;
+	ks.insert({ cs1.get_idc(), cs1 });
+}
