@@ -58,22 +58,24 @@ bool Find_procent(const T& obj, const string& percentage) {
 }
 
 template <typename T>
-int Find_cs(const unordered_map<int, T>& objects, const string& filterValue, bool (*FilterFunction)(const T&, const string&)) {
+vector<int> Find_cs(const unordered_map<int, T>& objects, const string& filterValue, bool (*FilterFunction)(const T&, const string&)) {
+    vector<int> matching_ids;
     for (const auto& object_entry : objects) {
         const T& obj = object_entry.second;
         if (FilterFunction(obj, filterValue)) {
-            return object_entry.first;
+            matching_ids.push_back(object_entry.first);
         }
     }
-    return -1;
+    return matching_ids;
 }
 template <typename T>
-int Find_pipe(const unordered_map<int, T>& objects, bool filterValue, bool (*FilterFunction2)(const T&, bool)) {
+vector<int> Find_pipe(const unordered_map<int, T>& objects, bool filterValue, bool (*FilterFunction2)(const T&, bool)) {
+    vector<int> matching_ids;
     for (const auto& object_entry : objects) {
         const T& obj = object_entry.second;
         if (FilterFunction2(obj, filterValue)) {
-            return object_entry.first;
+            matching_ids.push_back(object_entry.first);
         }
     }
-    return -1;
+    return matching_ids;
 }

@@ -139,17 +139,20 @@ void Filter() {
 				Log("Enter the name of the pipe to find: ");
 				cin.ignore();
 				getline(cin, pipe_name);
+				vector<int> matching_id_name_pipe;
 				for (const auto& pipe_entry : pipe) {
 					const truba& tr = pipe_entry.second;
 					if (tr.name.find(pipe_name) != string::npos) {
-						matching_pipes.insert(pipe_entry.first);
+						matching_id_name_pipe.push_back(pipe_entry.first);
 					}
 				}
-				if (!matching_pipes.empty()) {
+				if (!matching_id_name_pipe.empty()) {
 					Log("Pipes found: ");
-					for (int pipe_id : matching_pipes) {
+					for (int pipe_id : matching_id_name_pipe) {
 						cout << pipe[pipe_id] << endl;
+						matching_pipes.insert(pipe_id);
 					}
+					matching_id_name_pipe.clear();
 				}
 				else {
 					Log("No pipes with the specified name found.");
@@ -160,15 +163,18 @@ void Filter() {
 				Log("Enter the status 'under_repair' (1 for true, 0 for false): ");
 				cin >> isUnderRepair;
 				Log_cin(to_string(isUnderRepair));
-				int pipe_id = Find_pipe(pipe, isUnderRepair, Find_under_repair<truba>);
-				if (pipe_id != -1) {
-					matching_pipes.insert(pipe_id);
-					Log("Pipe found with ID: ");
-					cout << pipe[pipe_id] << endl;
+				vector<int> matching_ids = Find_pipe(pipe, isUnderRepair, Find_under_repair<truba>);
+				if (!matching_ids.empty()) {
+					Log("Pipes found: ");
+					for (int pipe_id : matching_ids) {
+						cout << pipe[pipe_id] << endl;
+						matching_pipes.insert(pipe_id);
+					}
 				}
 				else {
-					Log("No pipe with the specified 'under_repair' status found.");
+					Log("No pipes with the specified 'under_repair' status found.");
 				}
+
 			}
 			else {
 				Log("Invalid filter entered, press 8 and try again");
@@ -184,19 +190,20 @@ void Filter() {
 				Log("Enter the name of the compressor station to find: ");
 				cin.ignore();
 				getline(cin, cs_name);
-
+				vector<int> matching_id_name_cs;
 				for (const auto& cs_entry : ks) {
 					const CS& cs = cs_entry.second;
 					if (cs.name.find(cs_name) != string::npos) {
-						matching_cs.insert(cs_entry.first);
+						matching_id_name_cs.push_back(cs_entry.first);
 					}
 				}
-
-				if (!matching_cs.empty()) {
+				if (!matching_id_name_cs.empty()) {
 					Log("Compressor stations found: ");
-					for (int cs_id : matching_cs) {
+					for (int cs_id : matching_id_name_cs) {
 						cout << ks[cs_id] << endl;
+						matching_cs.insert(cs_id);
 					}
+					matching_id_name_cs.clear();
 				}
 				else {
 					Log("No compressor stations with the specified name found.");
@@ -206,14 +213,17 @@ void Filter() {
 				Log("Enter the percentage to find: ");
 				string cs_procent;
 				cin >> cs_procent;
-				int cs_id = Find_cs(ks, cs_procent, Find_procent<CS>);
-				if (cs_id != -1) {
-					matching_cs.insert(cs_id);
-					Log("Compressor station found with ID: ");
-					cout << ks[cs_id] << endl;
+				vector<int> matching_ids = Find_cs(ks, cs_procent, Find_procent<CS>);
+				if (!matching_cs.empty()) {
+					Log("Compressor stations found: ");
+					for (int cs_id : matching_ids) {
+						cout << ks[cs_id] << endl;
+						matching_cs.insert(cs_id);
+
+					}
 				}
 				else {
-					Log("Compressor station with the specified percentage not found.");
+					Log("No compressor stations with the specified percentage found.");
 				}
 			}
 			else {

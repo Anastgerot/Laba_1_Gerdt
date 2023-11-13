@@ -33,11 +33,10 @@ Select objects to use filter:
 4. Delete found objects
 0. Exit
 Enter your choice: 
-1
-Write the filter (name or under_repair): 
-name
-Enter the name of the pipe to find: 
-Pipes found: 
+2
+Write the filter (name or procent): 
+Enter the name of the compressor station to find: 
+No compressor stations with the specified name found.
 Select objects to use filter:
 1. Use filter for pipes
 2. Use filter for compressor stations
@@ -45,36 +44,57 @@ Select objects to use filter:
 4. Delete found objects
 0. Exit
 Enter your choice: 
+2
+Write the filter (name or procent): 
+Enter the name of the compressor station to find: 
+Compressor stations found: 
+Select objects to use filter:
+1. Use filter for pipes
+2. Use filter for compressor stations
+3. Edit found objects
+4. Delete found objects
+0. Exit
+Enter your choice: 
+2
+Write the filter (name or procent): 
+Enter the percentage to find: 
+Compressor stations found: 
+Select objects to use filter:
+1. Use filter for pipes
+2. Use filter for compressor stations
+3. Edit found objects
+4. Delete found objects
+0. Exit
+Enter your choice: 
+4
+Do you want to remove pipes (1), compressor stations (2), or both (3)?
+Do you want to delete all found compressor stations (1) or specify IDs (2)?
+Compressor stations removed successfully.
+Select objects to use filter:
+1. Use filter for pipes
+2. Use filter for compressor stations
+3. Edit found objects
+4. Delete found objects
+0. Exit
+Enter your choice: 
+0
+Choose the number:
+1. Add the pipe
+2. Add the compressor station
+3. View all objects
+4. Save
+5. Download
+6. Choose and Edit objects with the filter
+0. Exit
+Selection: 
 3
-Select objects to edit:
-1. Edit found pipes
-2. Edit found compressor stations
-Enter your choice: 
-1
-Do you want to edit all found pipes (1) or specify IDs (2)?
-Enter pipe IDs to edit (separated by space): 
-The status of pipe 1 has been successfully changed.
-Select objects to use filter:
-1. Use filter for pipes
-2. Use filter for compressor stations
-3. Edit found objects
-4. Delete found objects
+It is all of your objects:
+Choose the number:
+1. Add the pipe
+2. Add the compressor station
+3. View all objects
+4. Save
+5. Download
+6. Choose and Edit objects with the filter
 0. Exit
-Enter your choice: 
-3
-Select objects to edit:
-1. Edit found pipes
-2. Edit found compressor stations
-Enter your choice: 
-1
-Do you want to edit all found pipes (1) or specify IDs (2)?
-The status of pipe 1 has been successfully changed.
-The status of pipe 2 has been successfully changed.
-The status of pipe 3 has been successfully changed.
-Select objects to use filter:
-1. Use filter for pipes
-2. Use filter for compressor stations
-3. Edit found objects
-4. Delete found objects
-0. Exit
-Enter your choice: 
+Selection: 
