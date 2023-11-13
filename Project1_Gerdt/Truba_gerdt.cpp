@@ -6,9 +6,26 @@
 #include "truba.h"
 #include "CS.h"
 #include "Utils.h"
+#include <sstream>
+#include <vector>
 using namespace std;
 unordered_map<int, truba> pipe;
 unordered_map<int, CS> ks;
+void ClearLogFile() {
+	ofstream logFile("log.txt", ios::trunc);
+	logFile.close();
+}
+vector<int> ParseIds(const string& input) {
+	vector<int> ids;
+	istringstream iss(input);
+	int id;
+
+	while (iss >> id) {
+		ids.push_back(id);
+	}
+
+	return ids;
+}
 void Viewall()
 {
 	if (pipe.size() == 0 && ks.size() == 0)
@@ -217,11 +234,31 @@ void Filter() {
 					Log("You don't have pipes to edit");
 				}
 				else {
-					for (int pipe_id : matching_pipes)
-					{
-						truba& tr = pipe[pipe_id];
-						tr.under_repair = !tr.under_repair;
-						Log("The status of pipe " + to_string(pipe_id) + " has been successfully changed.");
+					Log("Do you want to edit all found pipes (1) or specify IDs (2)?");
+					int editAllChoice = GetCorrectNumber(1, 2);
+					if (editAllChoice == 1) {
+						for (int pipe_id : matching_pipes) {
+							truba& tr = pipe[pipe_id];
+							tr.under_repair = !tr.under_repair;
+							Log("The status of pipe " + to_string(pipe_id) + " has been successfully changed.");
+						}
+					}
+					else if (editAllChoice == 2) {
+						cin.ignore();
+						Log("Enter pipe IDs to edit (separated by space): ");
+						string idInput;
+						getline(cin, idInput);
+						vector<int> ids = ParseIds(idInput);
+						for (int id : ids) {
+							auto pipe_iter = pipe.find(id);
+							if (pipe_iter != pipe.end()) {
+								pipe_iter->second.under_repair = !pipe_iter->second.under_repair;
+								Log("The status of pipe " + to_string(id) + " has been successfully changed.");
+							}
+							else {
+								Log("Pipe with ID " + to_string(id) + " not found.");
+							}
+						}
 					}
 				}
 			}
@@ -230,19 +267,38 @@ void Filter() {
 					Log("You don't have compressor stations to edit");
 				}
 				else {
-					for (int cs_id : matching_cs)
-					{
-						CS& cs = ks[cs_id];
-						Log("The number of workshops: " + to_string(cs.workshop));
-						Log("Type the new number of workshops in operation:");
-						Log_cin(to_string(cs.workshop_on = GetCorrectNumber(1, cs.workshop)));
-						while (cs.workshop < cs.workshop_on)
-						{
-							Log("The number of workshops can't be less then the number of workshops in operation.");
-							Log("Please, try again: ");
+					Log("Do you want to edit all found compressor stations (1) or specify IDs (2)?");
+					int editAllChoice = GetCorrectNumber(1, 2);
+					if (editAllChoice == 1) {
+						for (int cs_id : matching_cs) {
+							CS& cs = ks[cs_id];
+							Log("The number of workshops: " + to_string(cs.workshop));
+							Log("Type the new number of workshops in operation:");
 							Log_cin(to_string(cs.workshop_on = GetCorrectNumber(1, cs.workshop)));
+							while (cs.workshop < cs.workshop_on) {
+								Log("The number of workshops can't be less than the number of workshops in operation.");
+								Log("Please, try again: ");
+								Log_cin(to_string(cs.workshop_on = GetCorrectNumber(1, cs.workshop)));
+							}
+							Log("The status of compressor station " + to_string(cs_id) + " has been successfully changed.");
 						}
-						Log("The status of compressor station " + to_string(cs_id) + " has been successfully changed.");
+					}
+					else if (editAllChoice == 2) {
+						cin.ignore();
+						Log("Enter compressor station IDs to edit (separated by space): ");
+						string idInput;
+						getline(cin, idInput);
+						vector<int> ids = ParseIds(idInput);
+						for (int id : ids) {
+							auto cs_iter = ks.find(id);
+							if (cs_iter != ks.end()) {
+								CS& cs = cs_iter->second;
+								Log("The status of compressor station " + to_string(id) + " has been successfully changed.");
+							}
+							else {
+								Log("Compressor station with ID " + to_string(id) + " not found.");
+							}
+						}
 					}
 				}
 			}
@@ -254,27 +310,66 @@ void Filter() {
 			if (!matching_pipes.empty() || !matching_cs.empty()) {
 				Log("Do you want to remove pipes (1), compressor stations (2), or both (3)?");
 				int removalChoice = GetCorrectNumber(1, 3);
-
 				if (removalChoice == 1 || removalChoice == 3) {
-					for (int id : matching_pipes) {
-						auto pipe_iter = pipe.find(id);
-						if (pipe_iter != pipe.end()) {
-							pipe.erase(pipe_iter);
+					Log("Do you want to delete all found pipes (1) or specify IDs (2)?");
+					int deleteChoice = GetCorrectNumber(1, 2);
+					if (deleteChoice == 1) {
+						for (int id : matching_pipes) {
+							auto pipe_iter = pipe.find(id);
+							if (pipe_iter != pipe.end()) {
+								pipe.erase(pipe_iter);
+							}
+						}
+						Log("Pipes removed successfully.");
+						matching_pipes.clear();
+					}
+					else if(deleteChoice == 2){
+						cin.ignore();
+						Log("Enter pipe IDs to remove (separated by space): ");
+						string idInput;
+						getline(cin, idInput);
+						vector<int> ids = ParseIds(idInput);
+						for (int id : ids) {
+							auto pipe_iter = pipe.find(id);
+							if (pipe_iter != pipe.end()) {
+								pipe.erase(pipe_iter);
+							}
+							else {
+								Log("Pipe with ID " + to_string(id) + " not found.");
+							}
 						}
 					}
-					Log("Pipes removed successfully.");
-					matching_pipes.clear();
 				}
 
 				if (removalChoice == 2 || removalChoice == 3) {
-					for (int id : matching_cs) {
-						auto cs_iter = ks.find(id);
-						if (cs_iter != ks.end()) {
-							ks.erase(cs_iter);
+					Log("Do you want to delete all found compressor stations (1) or specify IDs (2)?");
+					int deleteChoice = GetCorrectNumber(1, 2);
+					if (deleteChoice == 1) {
+						for (int id : matching_cs) {
+							auto cs_iter = ks.find(id);
+							if (cs_iter != ks.end()) {
+								ks.erase(cs_iter);
+							}
+						}
+						Log("Compressor stations removed successfully.");
+						matching_cs.clear();
+					}
+					else if(deleteChoice == 2){
+						cin.ignore();
+						Log("Enter compressor station IDs to remove (separated by space): ");
+						string idInput;
+						getline(cin, idInput);
+						vector<int> ids = ParseIds(idInput);
+						for (int id : ids) {
+							auto cs_iter = ks.find(id);
+							if (cs_iter != ks.end()) {
+								ks.erase(cs_iter);
+							}
+							else {
+								Log("Compressor station with ID " + to_string(id) + " not found.");
+							}
 						}
 					}
-					Log("Compressor stations removed successfully.");
-					matching_cs.clear();
 				}
 			}
 			else {
@@ -291,6 +386,7 @@ void Filter() {
 }
 int main()
 {
+	ClearLogFile();
 	while (true)
 	{
 		int choice;

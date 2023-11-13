@@ -36,8 +36,7 @@ ostream& operator << (ostream& out, const truba& tr)
 			<< "Name: " << tr.name << endl
 			<< "Length: " << tr.length << endl
 			<< "Diameter: " << tr.diameter << endl
-			<< "Under repair? (1 - Yes, 0 - No): " << tr.under_repair << endl
-			<< "Max_id: " << truba::max_id_truba << endl;
+			<< "Under repair? (1 - Yes, 0 - No): " << tr.under_repair << endl;
 		return out;
 	}
 }
