@@ -18,28 +18,6 @@ T GetCorrectNumber(T min, T max)
 	return a;
 }
 template <typename T>
-void Log(const T& message)
-{
-    ofstream logFile("log.txt", ios::app);
-    if (logFile.is_open())
-    {
-        logFile << message << endl;
-        logFile.close();
-    }
-    cout << message << endl;
-}
-
-template <typename T>
-void Log_cin(const T& message)
-{
-    ofstream logFile("log.txt", ios::app);
-    if (logFile.is_open())
-    {
-        logFile << message << endl;
-        logFile.close();
-    }
-}
-template <typename T>
 bool Find_under_repair(const T& obj, bool underRepair) {
     return obj.under_repair == underRepair;
 }

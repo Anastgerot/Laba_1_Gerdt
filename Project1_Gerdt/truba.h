@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include <unordered_map>
 using namespace std;
 class truba
 {
@@ -16,7 +15,6 @@ public:
 	friend istream& operator >> (istream& in, truba& tr);
 	friend void Save_truba(ofstream& fout, const truba& tr);
 	friend truba& Download_truba(ifstream& fin, truba& tr);
-	friend void Addpipe(unordered_map<int, truba>& pipe);
 	truba();
 	int get_idp() { return idpipe; };
 };

@@ -1,8 +1,8 @@
-#include "truba.h"
-#include "Utils.h"
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "truba.h"
+#include "Utils.h"
 using namespace std;
 int truba::max_id_truba = 0;
 truba::truba()
@@ -20,7 +20,7 @@ istream& operator >> (istream& in, truba& tr)
 	tr.diameter = GetCorrectNumber(0, 1000000);
 	cout << "Under repair? (1 - Yes, 0 - No): ";
 	tr.under_repair = GetCorrectNumber(0, 1);
-	Log("Your pipe successfully entered");
+	cout << "Your pipe successfully entered" << endl;
 	return in;
 }
 ostream& operator << (ostream& out, const truba& tr)
@@ -44,7 +44,7 @@ void Save_truba(ofstream& fout, const truba& tr)
 {
 	if (tr.name.empty())
 	{
-		Log("You don't have the pipe to save");
+		cout << "You don't have the pipe to save" << endl;
 	}
 	else
 	{
@@ -64,10 +64,4 @@ truba& Download_truba(ifstream& fin, truba& tr)
 			return tr;
 		}
 	}
-}
-void Addpipe(unordered_map<int, truba>& pipe)
-{
-	truba tr1;
-	cin >> tr1;
-	pipe.insert({ tr1.get_idp(), tr1 });
 }

@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include <unordered_map>
 using namespace std;
 class CS
 {
@@ -16,7 +15,6 @@ public:
 	friend ostream& operator << (ostream& out, const CS& cs);
 	friend void Save_CS(ofstream& fout, const CS& cs);
 	friend CS& Download_CS(ifstream& fin, CS& cs);
-	friend void Addcs(unordered_map<int, CS>& ks);
 	CS();
 	int get_idc() { return idcs; };
 };

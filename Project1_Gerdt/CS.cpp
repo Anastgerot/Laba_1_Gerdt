@@ -1,9 +1,9 @@
-#include "CS.h"
-#include "Utils.h"
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "CS.h"
+#include "Utils.h"
 int CS::max_id_cs = 0;
 CS::CS()
 {
@@ -26,7 +26,7 @@ istream& operator >> (istream& in, CS& cs)
 	}
 	cout << "Type efficiency (From A to D): ";
 	cs.efficiency = GetCorrectNumber('A', 'D');
-	Log("Your compressor station successfully entered");
+	cout << "Your compressor station successfully entered" << endl;
 	return in;
 }
 ostream& operator << (ostream& out, const CS& cs)
@@ -70,10 +70,4 @@ CS& Download_CS(ifstream& fin, CS& cs)
 			return cs;
 		}
 	}
-}
-void Addcs(unordered_map<int, CS>& ks)
-{
-	CS cs1;
-	cin >> cs1;
-	ks.insert({ cs1.get_idc(), cs1 });
 }
