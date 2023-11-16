@@ -36,7 +36,8 @@ ostream& operator << (ostream& out, const truba& tr)
 			<< "Name: " << tr.name << endl
 			<< "Length: " << tr.length << endl
 			<< "Diameter: " << tr.diameter << endl
-			<< "Under repair? (1 - Yes, 0 - No): " << tr.under_repair << endl;
+			<< "Under repair? (1 - Yes, 0 - No): " << tr.under_repair << endl
+			<< "max" << truba::max_id_truba << endl;
 		return out;
 	}
 }
@@ -49,6 +50,7 @@ void Save_truba(ofstream& fout, const truba& tr)
 	else
 	{
 		fout << "Pipe:" << endl;
+		fout << tr.idpipe << endl;
 		fout << tr.name << endl << tr.length << endl << tr.diameter << endl << tr.under_repair << endl;
 	}
 }
@@ -59,6 +61,8 @@ truba& Download_truba(ifstream& fin, truba& tr)
 	{
 		if (line == "Pipe:")
 		{
+			fin >> tr.idpipe;
+			fin.ignore();
 			getline(fin, tr.name);
 			fin >> tr.length >> tr.diameter >> tr.under_repair;
 			return tr;

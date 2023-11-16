@@ -1,10 +1,27 @@
 #pragma once
 #include <iostream>
-#include <iostream>
 #include <fstream> 
 #include <string>
 #include <unordered_map>
 using namespace std;
+class redirect_output_wrapper
+{
+    ostream& stream;
+    streambuf* const old_buf;
+public:
+    redirect_output_wrapper(ostream& src)
+        :old_buf(src.rdbuf()), stream(src)
+    {
+    }
+
+    ~redirect_output_wrapper() {
+        stream.rdbuf(old_buf);
+    }
+    void redirect(ostream& dest)
+    {
+        stream.rdbuf(dest.rdbuf());
+    }
+};
 template <typename T>
 T GetCorrectNumber(T min, T max)
 {
@@ -15,7 +32,8 @@ T GetCorrectNumber(T min, T max)
 		cin.ignore(1000, '\n');
 		cout << "Type number (" "from" << " " << min << " " << "to" << " " << max << "): ";
 	}
-	return a;
+    cerr << a << endl;
+    return a;
 }
 template <typename T>
 bool Find_under_repair(const T& obj, bool underRepair) {

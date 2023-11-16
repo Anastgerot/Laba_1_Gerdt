@@ -55,6 +55,7 @@ void Save_CS(ofstream& fout, const CS& cs)
 	else
 	{
 		fout << "Compressor station:" << endl;
+		fout << cs.idcs << endl;
 		fout << cs.name << endl << cs.workshop << endl << cs.workshop_on << endl << cs.efficiency << endl;
 	}
 }
@@ -65,6 +66,8 @@ CS& Download_CS(ifstream& fin, CS& cs)
 	{
 		if (line == "Compressor station:")
 		{
+			fin >> cs.idcs;
+			fin.ignore();
 			getline(fin, cs.name);
 			fin >> cs.workshop >> cs.workshop_on >> cs.efficiency;
 			return cs;

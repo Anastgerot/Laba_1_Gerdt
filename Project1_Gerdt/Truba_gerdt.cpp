@@ -1,37 +1,42 @@
-#include <string>
+#include <iostream>
 #include <unordered_map>
+#include <chrono>
+#include <format>
 #include "truba.h"
 #include "CS.h"
 #include "Utils.h"
 #include "addition.h"
 using namespace std;
-void Addpipe(unordered_map<int, truba>& pipe);
+using namespace chrono;
 void Addcs(unordered_map<int, CS>& ks);
-void ClearLogFile();
-void Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS> ks);
+void Addpipe(unordered_map<int, truba>& pipe);
 vector<int> ParseIds(const string& input);
-void Viewall(unordered_map<int, truba>& pipe, unordered_map<int, CS> ks);
-void Save_objects(unordered_map<int, truba>& pipe, unordered_map<int, CS> ks);
-void Load_Download(unordered_map<int, truba>& pipe, unordered_map<int, CS> ks);
+void Viewall(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
+void Save_objects(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
+void Load_Download(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
+void Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
 int main()
 {
 	unordered_map<int, truba> pipe;
 	unordered_map<int, CS> ks;
-	ClearLogFile();
+	redirect_output_wrapper cerr_out(cerr);
+	string time = format("{:%d_%m_%Y %H_%M_%OS}", system_clock::now());
+	ofstream logfile("log_" + time);
+	if (logfile)
+		cerr_out.redirect(logfile);
 	while (true)
 	{
 		int choice;
-		Log("Choose the number:");
-		Log("1. Add the pipe");
-		Log("2. Add the compressor station");
-		Log("3. View all objects");
-		Log("4. Save");
-		Log("5. Download");
-		Log("6. Choose and Edit objects with the filter");
-		Log("0. Exit");
-		Log("Selection: ");
+		cout << "Choose the number:" << endl;
+		cout << "1. Add the pipe" << endl;
+		cout << "2. Add the compressor station" << endl;
+		cout << "3. View all objects" << endl;
+		cout << "4. Save" << endl;
+		cout << "5. Download" << endl;
+		cout << "6. Choose and Edit objects with the filter" << endl;
+		cout << "0. Exit" << endl;
+		cout << "Selection: ";
 		choice = GetCorrectNumber(0, 6);
-		Log_cin(to_string(choice));
 		switch (choice)
 		{
 		case 1:

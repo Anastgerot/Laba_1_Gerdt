@@ -5,10 +5,10 @@
 #include <set>
 #include <sstream>
 #include <vector>
-#include "addition.h"
 #include "truba.h"
 #include "CS.h"
 #include "Utils.h"
+#include "addition.h"
 using namespace std;
 void Addpipe(unordered_map<int, truba>& pipe)
 {
@@ -21,11 +21,6 @@ void Addcs(unordered_map<int, CS>& ks)
 	CS cs1;
 	cin >> cs1;
 	ks.insert({ cs1.get_idc(), cs1 });
-}
-void ClearLogFile()
-{
-	ofstream logFile("log.txt", ios::trunc);
-	logFile.close();
 }
 vector<int> ParseIds(const string& input)
 {
@@ -40,7 +35,7 @@ vector<int> ParseIds(const string& input)
 
 	return ids;
 }
-void Viewall(unordered_map<int, truba>& pipe, unordered_map<int, CS> ks)
+void Viewall(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks)
 {
 	if (pipe.size() == 0 && ks.size() == 0)
 	{
@@ -57,7 +52,7 @@ void Viewall(unordered_map<int, truba>& pipe, unordered_map<int, CS> ks)
 		}
 	}
 }
-void Save_objects(unordered_map<int, truba>& pipe, unordered_map<int, CS> ks)
+void Save_objects(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks)
 {
 	if (pipe.empty() && ks.empty())
 	{
@@ -76,13 +71,17 @@ void Save_objects(unordered_map<int, truba>& pipe, unordered_map<int, CS> ks)
 			fout << pipe.size() << " " << ks.size() << endl;
 			for (const auto& tr : pipe)
 			{
-				Save_truba(fout, tr.second);
-				cout << "Pipe with ID " << to_string(tr.first) << " successfully saved! Please, check your file." << endl;
+				if (!tr.second.name.empty()) {
+					Save_truba(fout, tr.second);
+					cout << "Pipe with ID " << to_string(tr.first) << " successfully saved! Please, check your file." << endl;
+				}
 			}
 			for (const auto& cs : ks)
 			{
-				Save_CS(fout, cs.second);
-				cout << "CS with ID " << to_string(cs.first) << " successfully saved! Please, check your file." << endl;
+				if (!cs.second.name.empty()) {
+					Save_CS(fout, cs.second);
+					cout << "CS with ID " << to_string(cs.first) << " successfully saved! Please, check your file." << endl;
+				}
 			}
 			fout.close();
 		}
@@ -92,7 +91,7 @@ void Save_objects(unordered_map<int, truba>& pipe, unordered_map<int, CS> ks)
 		}
 	}
 }
-void Load_Download(unordered_map<int, truba>& pipe, unordered_map<int, CS> ks) {
+void Load_Download(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) {
 	int count_pipe = 0;
 	int count_cs = 0;
 	ifstream fin;
@@ -115,20 +114,28 @@ void Load_Download(unordered_map<int, truba>& pipe, unordered_map<int, CS> ks) {
 			for (int i = 0; i < count_pipe; i++) {
 				truba tr1;
 				tr1 = Download_truba(fin, tr1);
-				pipe.insert({ tr1.get_idp(), tr1 });
+				pipe.insert({ tr1.get_idp(), tr1});
+				if (truba::max_id_truba < tr1.get_idp()) {
+					truba::max_id_truba = tr1.get_idp();
+				}
 				cout << "Your pipe with ID " << to_string(tr1.get_idp()) << " has been successfully download! Press 3 to check your objects." << endl;
 			}
+			truba::max_id_truba++;
 			for (int i = 0; i < count_cs; i++) {
 				CS cs1;
 				cs1 = Download_CS(fin, cs1);
-				ks.insert({ cs1.get_idc(), cs1 });
+				ks.insert({ cs1.get_idc(), cs1});
+				if (CS::max_id_cs < cs1.get_idc()) {
+					CS::max_id_cs = cs1.get_idc();
+				}
 				cout << "Your compressor station with ID " << to_string(cs1.get_idc()) << " has been successfully download! Press 3 to check your objects." << endl;
 			}
+			CS::max_id_cs++;
 		}
 		fin.close();
 	}
 }
-void Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS> ks) {
+void Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) {
 	int choice;
 	string filter;
 	set<int> matching_pipes;

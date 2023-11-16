@@ -1,4 +1,4 @@
-5 3
+6 3
 Pipe:
 0
 pipe 1
@@ -28,6 +28,12 @@ Pipe:
 ugi
 67
 89
+1
+Pipe:
+6
+t4
+4
+3
 1
 Compressor station:
 0
