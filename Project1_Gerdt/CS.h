@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <vector>
 using namespace std;
 class CS
 {
@@ -7,6 +8,7 @@ private:
 	int idcs = 0;
 	char efficiency = 'A';
 public:
+	vector<int> connected_pipes;
 	string name = "";
 	int workshop = 0;
 	int workshop_on = 0;
@@ -16,5 +18,9 @@ public:
 	friend void Save_CS(ofstream& fout, const CS& cs);
 	friend CS& Download_CS(ifstream& fin, CS& cs);
 	CS();
+	vector<int> getConnectedPipes() {
+		return connected_pipes;
+	}
 	int get_idc() { return idcs; };
+
 };

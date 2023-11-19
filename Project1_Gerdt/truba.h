@@ -6,10 +6,11 @@ class truba
 private:
 	int idpipe = 0;
 	double length = 0;
-	int diameter = 0;
 public:
 	string name = "";
 	bool under_repair = false;
+	int diameter = 0;
+	bool is_free = true;
 	static int max_id_truba;
 	friend ostream& operator << (ostream& out, const truba& tr);
 	friend istream& operator >> (istream& in, truba& tr);
@@ -17,4 +18,7 @@ public:
 	friend truba& Download_truba(ifstream& fin, truba& tr);
 	truba();
 	int get_idp() { return idpipe; };
+	void set_diameter(int new_diameter) {
+		diameter = new_diameter;
+	}
 };

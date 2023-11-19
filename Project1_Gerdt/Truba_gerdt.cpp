@@ -8,17 +8,11 @@
 #include "addition.h"
 using namespace std;
 using namespace chrono;
-void Addcs(unordered_map<int, CS>& ks);
-void Addpipe(unordered_map<int, truba>& pipe);
-vector<int> ParseIds(const string& input);
-void Viewall(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
-void Save_objects(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
-void Load_Download(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
-void Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
 int main()
 {
 	unordered_map<int, truba> pipe;
 	unordered_map<int, CS> ks;
+	addition add;
 	redirect_output_wrapper cerr_out(cerr);
 	string time = format("{:%d_%m_%Y %H_%M_%OS}", system_clock::now());
 	ofstream logfile("log_" + time);
@@ -34,28 +28,32 @@ int main()
 		cout << "4. Save" << endl;
 		cout << "5. Download" << endl;
 		cout << "6. Choose and Edit objects with the filter" << endl;
+		cout << "7. Connect the pipe and compressor station in the gas transmission network." << endl;
 		cout << "0. Exit" << endl;
 		cout << "Selection: ";
-		choice = GetCorrectNumber(0, 6);
+		choice = GetCorrectNumber(0, 7);
 		switch (choice)
 		{
 		case 1:
-			Addpipe(pipe);
+			add.Addpipe(pipe);
 			break;
 		case 2:
-			Addcs(ks);
+			add.Addcs(ks);
 			break;
 		case 3:
-			Viewall(pipe, ks);
+			add.Viewall(pipe, ks);
 			break;
 		case 4:
-			Save_objects(pipe, ks);
+			add.Save_objects(pipe, ks);
 			break;
 		case 5:
-			Load_Download(pipe, ks);
+			add.Load_Download(pipe, ks);
 			break;
 		case 6:
-			Filter(pipe, ks);
+			add.Filter(pipe, ks);
+			break;
+		case 7:
+			add.Connect_CS_and_Pipe(pipe, ks);
 			break;
 		case 0:
 			return 0;

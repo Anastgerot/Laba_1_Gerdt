@@ -10,13 +10,13 @@
 #include "Utils.h"
 #include "addition.h"
 using namespace std;
-void Addpipe(unordered_map<int, truba>& pipe)
+void addition::Addpipe(unordered_map<int, truba>& pipe)
 {
 	truba tr1;
 	cin >> tr1;
 	pipe.insert({ tr1.get_idp(), tr1 });
 }
-void Addcs(unordered_map<int, CS>& ks)
+void addition::Addcs(unordered_map<int, CS>& ks)
 {
 	CS cs1;
 	cin >> cs1;
@@ -35,7 +35,7 @@ vector<int> ParseIds(const string& input)
 
 	return ids;
 }
-void Viewall(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks)
+void addition::Viewall(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks)
 {
 	if (pipe.size() == 0 && ks.size() == 0)
 	{
@@ -52,7 +52,7 @@ void Viewall(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks)
 		}
 	}
 }
-void Save_objects(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks)
+void addition::Save_objects(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks)
 {
 	if (pipe.empty() && ks.empty())
 	{
@@ -91,7 +91,7 @@ void Save_objects(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks)
 		}
 	}
 }
-void Load_Download(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) {
+void addition::Load_Download(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) {
 	int count_pipe = 0;
 	int count_cs = 0;
 	ifstream fin;
@@ -113,6 +113,7 @@ void Load_Download(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) 
 		else {
 			for (int i = 0; i < count_pipe; i++) {
 				truba tr1;
+				truba::max_id_truba = 0;
 				tr1 = Download_truba(fin, tr1);
 				pipe.insert({ tr1.get_idp(), tr1});
 				if (truba::max_id_truba < tr1.get_idp()) {
@@ -123,6 +124,7 @@ void Load_Download(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) 
 			truba::max_id_truba++;
 			for (int i = 0; i < count_cs; i++) {
 				CS cs1;
+				CS::max_id_cs = 0;
 				cs1 = Download_CS(fin, cs1);
 				ks.insert({ cs1.get_idc(), cs1});
 				if (CS::max_id_cs < cs1.get_idc()) {
@@ -135,7 +137,7 @@ void Load_Download(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) 
 		fin.close();
 	}
 }
-void Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) {
+void addition::Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) {
 	int choice;
 	string filter;
 	set<int> matching_pipes;
@@ -421,3 +423,68 @@ void Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) {
 		}
 	}
 }
+vector<int> addition::ParseIds(const string& input)
+{
+	return vector<int>();
+}
+void addition::Add_newpipe_connect(unordered_map<int, truba>& pipe, int diameter) {
+	truba tr1;
+	tr1.set_diameter(diameter); 
+	cin >> tr1;
+	pipe.insert({ tr1.get_idp(), tr1 });
+}
+void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) {
+	int idIn, idOut, diameter;
+	cout << "Enter the ID of the input compressor station: ";
+	idIn = GetCorrectNumber(0, CS::max_id_cs);
+	if (ks.find(idIn) == ks.end()) {
+		cout << "Input compressor station not found. Aborting connection." << endl;
+		return;
+	}
+
+	cout << "Enter the ID of the output compressor station: ";
+	idOut = GetCorrectNumber(0, CS::max_id_cs);
+	if (ks.find(idOut) == ks.end()) {
+		cout << "Output compressor station not found. Aborting connection." << endl;
+		return;
+	}
+
+	cout << "Enter the diameter of the pipe: ";
+	diameter = GetCorrectNumber(500, 1400);
+	while (!(diameter == 500 || diameter == 700 || diameter == 1000 || diameter == 1400)) {
+		cout << "The diameter can only be 500, 700, 1000 or 1400. Please try again: ";
+		diameter = GetCorrectNumber(500, 1400);
+	}
+
+	int available_pipe_id = -1;
+	for (const auto& pipe_entry : pipe) {
+		const truba& tr = pipe_entry.second;
+		if (!tr.under_repair && tr.diameter == diameter && tr.is_free == true) {
+			available_pipe_id = pipe_entry.first;
+			break;
+		}
+	}
+
+	if (available_pipe_id == -1) {
+		cout << "No available pipe found. Adding a new pipe." << endl;
+		Add_newpipe_connect(pipe, diameter);
+		for (const auto& pipe_entry : pipe) {
+			const truba& tr = pipe_entry.second;
+			if (!tr.under_repair && tr.diameter == diameter && tr.is_free == true) {
+				available_pipe_id = pipe_entry.first;
+				break;
+			}
+		}
+		cout << "Created a new pipe with ID " << available_pipe_id << " and diameter " << diameter << endl;
+	}
+
+	CS& csIn = ks[idIn];
+	CS& csOut = ks[idOut];
+	csIn.connected_pipes.push_back(available_pipe_id);
+	csOut.connected_pipes.push_back(available_pipe_id);
+
+	pipe[available_pipe_id].is_free = false;
+
+	cout << "Successfully connected compressor stations " << idIn << " and " << idOut << " with pipe " << available_pipe_id << endl;
+}
+
