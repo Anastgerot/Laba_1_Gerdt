@@ -41,25 +41,30 @@ bool Find_under_repair(const T& obj, bool underRepair) {
 }
 
 template <typename T>
-bool Find_procent(const T& obj, const string& percentage) {
-    int procent;
-    try {
-        procent = round(stof(percentage));
+bool Find_procent(const T& obj, int percentage, const string& comparison_type) {
+    int obj_percentage = round((obj.workshop - obj.workshop_on) * 100.0 / obj.workshop);
+
+    if (comparison_type == "equal") {
+        return abs(obj_percentage - percentage) <= 1;
     }
-    catch (const invalid_argument& e) {
-        cerr << "Invalid input for percentage: " << e.what() << endl;
+    else if (comparison_type == "greater") {
+        return obj_percentage > (percentage);
+    }
+    else if (comparison_type == "less") {
+        return obj_percentage < (percentage);
+    }
+    else {
+        cerr << "Invalid comparison type" << endl;
         return false;
     }
-    return abs(round((obj.workshop - obj.workshop_on) * 100.0 / obj.workshop) - procent) <= 1;
 }
 
-template <typename T>
-vector<int> Find_cs(const unordered_map<int, T>& objects, const string& filterValue, bool (*FilterFunction)(const T&, const string&)) {
+template <typename T, typename U>
+vector<int> Find_cs(const unordered_map<int, T>& data, const U& value, const string& comparison_type, bool (*comparison_func)(const T&, U, const string&)) {
     vector<int> matching_ids;
-    for (const auto& object_entry : objects) {
-        const T& obj = object_entry.second;
-        if (FilterFunction(obj, filterValue)) {
-            matching_ids.push_back(object_entry.first);
+    for (const auto& entry : data) {
+        if (comparison_func(entry.second, value, comparison_type)) {
+            matching_ids.push_back(entry.first);
         }
     }
     return matching_ids;

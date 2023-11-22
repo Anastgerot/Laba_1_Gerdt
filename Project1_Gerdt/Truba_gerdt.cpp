@@ -14,8 +14,8 @@ int main()
 	unordered_map<int, CS> ks;
 	addition add;
 	redirect_output_wrapper cerr_out(cerr);
-	string time = format("{:%d_%m_%Y %H_%M_%OS}", system_clock::now());
-	ofstream logfile("log_" + time);
+	string time = format("{:%d_%m_%Y %H_%M_%OS}", system_clock::now() + hours(3));
+	ofstream logfile("log_" + time + ".txt");
 	if (logfile)
 		cerr_out.redirect(logfile);
 	while (true)

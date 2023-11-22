@@ -63,7 +63,6 @@ void addition::Save_objects(unordered_map<int, truba>& pipe, unordered_map<int, 
 		string filename;
 		cout << "Enter the name of your file: ";
 		cin >> filename;
-		cout << filename;
 		ofstream fout;
 		fout.open((filename + ".txt"), ios::trunc);
 		if (fout.is_open())
@@ -98,7 +97,6 @@ void addition::Load_Download(unordered_map<int, truba>& pipe, unordered_map<int,
 	string filename;
 	cout << "Enter the name of the file to load: ";
 	cin >> filename;
-	cout << filename;
 	fin.open((filename + ".txt"), ios::in);
 	if (!fin.is_open()) {
 		cout << "Failed to open the file with name " << filename << " for loading." << endl;
@@ -151,12 +149,10 @@ void addition::Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& k
 		cout << "0. Exit" << endl;
 		cout << "Enter your choice: ";
 		choice = GetCorrectNumber(0, 4);
-		cout << to_string(choice);
 		switch (choice) {
 		case 1:
 			cout << "Write the filter (name or under_repair): ";
 			cin >> filter;
-			cout << filter;
 			if (filter == "name") {
 				matching_pipes.clear();
 				string pipe_name;
@@ -187,7 +183,6 @@ void addition::Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& k
 				bool isUnderRepair;
 				cout << "Enter the status 'under_repair' (1 for true, 0 for false): ";
 				cin >> isUnderRepair;
-				cout << to_string(isUnderRepair);
 				vector<int> matching_ids = Find_pipe(pipe, isUnderRepair, Find_under_repair<truba>);
 				if (!matching_ids.empty()) {
 					cout << "Pipes found: " << endl;
@@ -210,7 +205,6 @@ void addition::Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& k
 		case 2:
 			cout << "Write the filter (name or procent): ";
 			cin >> filter;
-
 			if (filter == "name") {
 				matching_cs.clear();
 				string cs_name;
@@ -239,11 +233,13 @@ void addition::Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& k
 			else if (filter == "procent") {
 				matching_cs.clear();
 				cout << "Enter the percentage to find: ";
-				string cs_procent;
+				int cs_procent;
 				cin >> cs_procent;
-				cout << cs_procent;
-				vector<int> matching_ids = Find_cs(ks, cs_procent, Find_procent<CS>);
-				if (!matching_cs.empty()) {
+				cout << "Enter the comparison type (equal, greater, less): ";
+				string comparison_type;
+				cin >> comparison_type;
+				vector<int> matching_ids = Find_cs(ks, cs_procent, comparison_type, Find_procent<CS>);
+				if (!matching_ids.empty()) {
 					cout << "Compressor stations found: " << endl;
 					for (int cs_id : matching_ids) {
 						cout << ks[cs_id] << endl;
@@ -266,8 +262,6 @@ void addition::Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& k
 			cout << "Enter your choice: ";
 			int editChoice;
 			cin >> editChoice;
-			cout << to_string(editChoice);
-
 			if (editChoice == 1) {
 				if (matching_pipes.size() == 0) {
 					cout << "You don't have pipes to edit" << endl;
