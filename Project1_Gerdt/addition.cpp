@@ -421,18 +421,33 @@ vector<int> addition::ParseIds(const string& input)
 {
 	return vector<int>();
 }
-void addition::Add_newpipe_connect(unordered_map<int, truba>& pipe, int diameter) {
+int addition::Add_newpipe_connect(unordered_map<int, truba>& pipe, int diameter) {
 	truba tr1;
-	tr1.set_diameter(diameter); 
 	cin >> tr1;
-	pipe.insert({ tr1.get_idp(), tr1 });
+	if (!(tr1.diameter == diameter))
+	{
+		tr1.set_diameter(diameter);
+		cout << "!!!Your diameter has been changed to the previously entered one: "  << diameter << endl;
+	}
+	int new_pipe_id = tr1.get_idp();
+	pipe.insert({ new_pipe_id, tr1 });
+	return new_pipe_id;
 }
-void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) {
+void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks, vector<vector<int>>& graph) {
 	int idIn, idOut, diameter;
 	cout << "Enter the ID of the input compressor station: ";
 	idIn = GetCorrectNumber(0, CS::max_id_cs);
 	if (ks.find(idIn) == ks.end()) {
 		cout << "Input compressor station not found. Aborting connection." << endl;
+		return;
+	}
+	int maxId = idIn;
+	if (maxId >= graph.size()) {
+		graph.resize(maxId + 1);
+	}
+
+	if (graph[idIn].size() >= 2) {
+		cout << "Input compressor station already has the maximum number of connections (2). Aborting connection." << endl;
 		return;
 	}
 
@@ -443,42 +458,69 @@ void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_ma
 		return;
 	}
 
+	maxId = max(idIn, idOut);
+	if (maxId >= graph.size()) {
+		graph.resize(maxId + 1);
+	}
+
+	if (graph[idOut].size() >= 2) {
+		cout << "Output compressor station already has the maximum number of connections (2). Aborting connection." << endl;
+		return;
+	}
+
+
 	cout << "Enter the diameter of the pipe: ";
 	diameter = GetCorrectNumber(500, 1400);
 	while (!(diameter == 500 || diameter == 700 || diameter == 1000 || diameter == 1400)) {
-		cout << "The diameter can only be 500, 700, 1000 or 1400. Please try again: ";
+		cout << "The diameter can only be 500, 700, 1000, or 1400. Please try again: ";
 		diameter = GetCorrectNumber(500, 1400);
 	}
 
 	int available_pipe_id = -1;
 	for (const auto& pipe_entry : pipe) {
 		const truba& tr = pipe_entry.second;
-		if (!tr.under_repair && tr.diameter == diameter && tr.is_free == true) {
-			available_pipe_id = pipe_entry.first;
-			break;
+		if (!tr.under_repair && tr.diameter == diameter) {
+			bool isPipeConnected = false;
+			for (const auto& connected_pipes: graph) {
+				for (int connected_pipe_id : connected_pipes) {
+					if (connected_pipe_id == pipe_entry.first) {
+						isPipeConnected = true;
+						break;
+					}
+				}
+				if (isPipeConnected) {
+					break;
+				}
+			}
+
+			if (!isPipeConnected) {
+				available_pipe_id = pipe_entry.first;
+				break;
+			}
 		}
 	}
 
 	if (available_pipe_id == -1) {
 		cout << "No available pipe found. Adding a new pipe." << endl;
-		Add_newpipe_connect(pipe, diameter);
-		for (const auto& pipe_entry : pipe) {
-			const truba& tr = pipe_entry.second;
-			if (!tr.under_repair && tr.diameter == diameter && tr.is_free == true) {
-				available_pipe_id = pipe_entry.first;
-				break;
-			}
-		}
+		available_pipe_id = Add_newpipe_connect(pipe, diameter);
 		cout << "Created a new pipe with ID " << available_pipe_id << " and diameter " << diameter << endl;
 	}
 
-	CS& csIn = ks[idIn];
-	CS& csOut = ks[idOut];
-	csIn.connected_pipes.push_back(available_pipe_id);
-	csOut.connected_pipes.push_back(available_pipe_id);
+	if (pipe[available_pipe_id].under_repair) {
+		cout << "Error: The selected pipe is under repair. Aborting connection." << endl;
+		return;
+	}
 
-	pipe[available_pipe_id].is_free = false;
-
+	graph[idIn].push_back(available_pipe_id);
+	graph[idOut].push_back(available_pipe_id);
 	cout << "Successfully connected compressor stations " << idIn << " and " << idOut << " with pipe " << available_pipe_id << endl;
-}
 
+	cout << "Graph (Compressor station -> Pipe):" << endl;
+	for (int i = 0; i < graph.size(); ++i) {
+		cout << i << " -> ";
+		for (const auto& pipe : graph[i]) {
+			cout << pipe << " ";
+		}
+		cout << endl;
+	}
+}

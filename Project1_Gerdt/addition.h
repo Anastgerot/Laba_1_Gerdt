@@ -6,7 +6,6 @@
 #include "CS.h"
 #include "Utils.h"
 using namespace std;
-using namespace std;
 class addition
 {
 public:
@@ -16,9 +15,8 @@ public:
     static vector<int> ParseIds(const string& input);
     static void Viewall(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
     static void Save_objects(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
-    static void Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
+    static void Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks, vector<vector<int>>& graph);
     static void Load_Download(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
-    static void Add_newpipe_connect(unordered_map<int, truba>& pipe, int diameter);
-
+    static int Add_newpipe_connect(unordered_map<int, truba>& pipe, int diameter);
 };
 

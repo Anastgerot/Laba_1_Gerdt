@@ -10,7 +10,6 @@ public:
 	string name = "";
 	bool under_repair = false;
 	int diameter = 0;
-	bool is_free = true;
 	static int max_id_truba;
 	friend ostream& operator << (ostream& out, const truba& tr);
 	friend istream& operator >> (istream& in, truba& tr);

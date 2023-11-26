@@ -12,6 +12,7 @@ int main()
 {
 	unordered_map<int, truba> pipe;
 	unordered_map<int, CS> ks;
+	vector<vector<int>> graph;
 	addition add;
 	redirect_output_wrapper cerr_out(cerr);
 	string time = format("{:%d_%m_%Y %H_%M_%OS}", system_clock::now() + hours(3));
@@ -53,7 +54,7 @@ int main()
 			add.Filter(pipe, ks);
 			break;
 		case 7:
-			add.Connect_CS_and_Pipe(pipe, ks);
+			add.Connect_CS_and_Pipe(pipe, ks, graph);
 			break;
 		case 0:
 			return 0;
@@ -66,7 +67,3 @@ int main()
 	}
 
 }
-//Комментарии: 
-//Нужно было сделать процент более легким для нахождения (например, если у меня 33.333, то пользователь сможет найти кс и при 66, и при 67)
-//Также нужно было распределить все функции относящиеся к трубам в truba.cpp, а кс в CS.cpp
-//Также, я усовершенствовала функции поиска по фильтру и логирование - сделала из них шаблоны и поместила в Utils.h, чтобы он был создан не только для одного шаблона
