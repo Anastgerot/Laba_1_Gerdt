@@ -57,10 +57,10 @@ int main()
 			break;
 		case 7:
 			add.Connect_CS_and_Pipe(pipe, ks, graph);
-			result = add.topologicalSort(graph);
+			result = add.TopologicalSort(graph);
 			break;
 		case 8:
-			add.Remove_Connection(graph);
+			add.Remove_Connection(pipe, ks, graph);
 			break;
 		case 0:
 			return 0;

@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <set>
 #include <sstream>
 #include <vector>
@@ -256,7 +257,7 @@ void addition::Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& k
 					cout << "You don't have pipes to edit" << endl;
 				}
 				else {
-					cout << "Do you want to edit all found pipes (1) or specify IDs (2)?";
+					cout << "Do you want to edit all found pipes (1) or specify IDs (2)? ";
 					int editAllChoice = GetCorrectNumber(1, 2);
 					if (editAllChoice == 1) {
 						for (int pipe_id : matching_pipes) {
@@ -295,7 +296,7 @@ void addition::Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& k
 					cout << "You don't have compressor stations to edit" << endl;
 				}
 				else {
-					cout << "Do you want to edit all found compressor stations (1) or specify IDs (2)?";
+					cout << "Do you want to edit all found compressor stations (1) or specify IDs (2)? ";
 					int editAllChoice = GetCorrectNumber(1, 2);
 					if (editAllChoice == 1) {
 						for (int cs_id : matching_cs) {
@@ -342,10 +343,10 @@ void addition::Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& k
 			break;
 		case 4:
 			if (!matching_pipes.empty() || !matching_cs.empty()) {
-				cout << "Do you want to remove pipes (1), compressor stations (2), or both (3)?";
+				cout << "Do you want to remove pipes (1), compressor stations (2), or both (3)? ";
 				int removalChoice = GetCorrectNumber(1, 3);
 				if (removalChoice == 1 || removalChoice == 3) {
-					cout << "Do you want to delete all found pipes (1) or specify IDs (2)?";
+					cout << "Do you want to delete all found pipes (1) or specify IDs (2)? ";
 					int deleteChoice = GetCorrectNumber(1, 2);
 					if (deleteChoice == 1) {
 						for (int id : matching_pipes) {
@@ -386,7 +387,7 @@ void addition::Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& k
 				}
 
 				if (removalChoice == 2 || removalChoice == 3) {
-					cout << "Do you want to delete all found compressor stations (1) or specify IDs (2)?";
+					cout << "Do you want to delete all found compressor stations (1) or specify IDs (2)? ";
 					int deleteChoice = GetCorrectNumber(1, 2);
 					if (deleteChoice == 1) {
 						for (int id : matching_cs) {
@@ -526,6 +527,7 @@ void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_ma
 		cout << "Created a new pipe with ID " << available_pipe_id << " and diameter " << diameter << endl;
 	}
 
+
 	if (pipe[available_pipe_id].under_repair) {
 		cout << "Error: The selected pipe is under repair. Aborting connection." << endl;
 		return;
@@ -533,7 +535,6 @@ void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_ma
 
 	Connection newConnection = { idIn, available_pipe_id, idOut };
 	graph[idIn].push_back(newConnection);
-	graph[idOut].push_back(newConnection);
 	cout << "Successfully connected compressor stations " << idIn << " and " << idOut << " with pipe " << available_pipe_id << endl;
 
 
@@ -546,51 +547,54 @@ void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_ma
 		cout << endl;
 	}
 }
-void addition::topologicalSortDFS(int vertex, const vector<vector<Connection>>& graph, vector<bool>& visited, vector<bool>& onPath, stack<int>& resultStack) {
-	if (vertex >= graph.size() || graph[vertex].empty()) {
-		return;
-	}
+bool addition::DFS(int v, vector<vector<Connection>>& graph, unordered_set<int>& visited, unordered_set<int>& recStack, stack<int>& result) {
+	visited.insert(v);
+	recStack.insert(v);
 
-	visited[vertex] = true;
-	onPath[vertex] = true; 
-
-	for (const auto& connection : graph[vertex]) {
-		int nextVertex = connection.outputStation;
-		if (!visited[nextVertex]) {
-			topologicalSortDFS(nextVertex, graph, visited, onPath, resultStack);
+	for (const auto& connection : graph[v]) {
+		if (visited.find(connection.outputStation) == visited.end()) {
+			if (DFS(connection.outputStation, graph, visited, recStack, result)) {
+				return true; 
+			}
+		}
+		else if (recStack.find(connection.outputStation) != recStack.end()) {
+			return true;
 		}
 	}
 
-	resultStack.push(vertex);
-	onPath[vertex] = false;
+	recStack.erase(v);
+	result.push(v);
+	return false;
 }
-vector<int> addition::topologicalSort(const vector<vector<Connection>>& graph) {
-	if (graph.empty()) {
-		cout << "Error: Graph is empty!" << endl;
-		return vector<int>();  
-	}
-
-	vector<int> result;
-	vector<bool> visited(graph.size(), false);
-	vector<bool> onPath(graph.size(), false);
-
-	stack<int> resultStack;
+vector<int> addition::TopologicalSort(vector<vector<Connection>>& graph) {
+	stack<int> result;
+	unordered_set<int> visited;
+	unordered_set<int> recStack; 
 
 	for (int i = 0; i < graph.size(); ++i) {
-		if (!visited[i]) {
-			topologicalSortDFS(i, graph, visited, onPath, resultStack);
+		if (visited.find(i) == visited.end()) {
+			if (DFS(i, graph, visited, recStack, result)) {
+				cout << "Error: The graph contains a cycle. Topological sorting is not possible." << endl;
+				return {}; 
+			}
 		}
 	}
 
-	while (!resultStack.empty()) {
-		result.push_back(resultStack.top());
-		resultStack.pop();
+	vector<int> sortedResult;
+	while (!result.empty()) {
+		sortedResult.push_back(result.top());
+		result.pop();
 	}
-	cout << "Topological Order: ";
-	for (int vertex : result) {
-		cout << vertex << " ";
+
+	if (!sortedResult.empty()) {
+		cout << "Topological Order: ";
+		for (int node : sortedResult) {
+			cout << node << " ";
+		}
+		cout << endl;
 	}
-	return result;
+
+	return sortedResult;
 }
 void addition::Remove_Vertex(int vertex, vector<vector<Connection>>& graph) {
 	if (vertex >= graph.size()) {
@@ -642,31 +646,61 @@ void addition::Remove_Edge_And_Unused_Vertices(int pipeId, vector<vector<Connect
 		cout << endl;
 	}
 }
-void addition::Remove_Connection(vector<vector<Connection>>& graph){
+void addition::Remove_Connection(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks, vector<vector<Connection>>& graph){
 	int idIn, idOut, idPipe;
+	bool connectionFound = false;
 	cout << "Enter the ID of the input compressor station: ";
 	idIn = GetCorrectNumber(0, CS::max_id_cs);
+	if (ks.find(idIn) == ks.end()) {
+		cout << "Input compressor station not found. Aborting connection." << endl;
+		return;
+	}
 	cout << "Enter the ID of the output compressor station: ";
 	idOut = GetCorrectNumber(0, CS::max_id_cs);
+	if (ks.find(idIn) == ks.end()) {
+		cout << "Output compressor station not found. Aborting connection." << endl;
+		return;
+	}
 	cout << "Enter the ID of the pipe: ";
 	idPipe = GetCorrectNumber(0, truba::max_id_truba);
-
-	for (auto& connections : graph) {
-		connections.erase(
-			remove_if(connections.begin(), connections.end(), [idPipe](const Connection& conn) {
-				return conn.pipe == idPipe;
-				}), connections.end()
-		);
+	if (pipe.find(idPipe) == pipe.end()) {
+		cout << "The pipe not found. Aborting connection." << endl;
+		return;
 	}
 
-	cout << "Connection with ID of the input compressor station " +  to_string(idIn) + ", ID of the pipe  " + to_string(idIn) + " and  ID of the output compressor station" + to_string(idOut) + " has been successfully deleted" << endl;
-
-	cout << "Update Graph (Compressor station -> Pipe -> Compressor station):" << endl;
-	for (int i = 0; i < graph.size(); ++i) {
-		cout << i << " -> ";
-		for (const auto& connection : graph[i]) {
-			cout << "(" << connection.inputStation << ", " << connection.pipe << ", " << connection.outputStation << ") ";
+	for (const auto& connections : graph) {
+		for (const Connection& conn : connections) {
+			if (conn.inputStation == idIn && conn.outputStation == idOut && conn.pipe == idPipe) {
+				connectionFound = true;
+				break; 
+			}
 		}
-		cout << endl;
+		if (connectionFound) {
+			break; 
+		}
+	}
+
+	if (connectionFound) {
+		for (auto& connections : graph) {
+			connections.erase(
+				remove_if(connections.begin(), connections.end(), [idIn, idOut, idPipe](const Connection& conn) {
+					return conn.inputStation == idIn && conn.outputStation == idOut && conn.pipe == idPipe;
+					}), connections.end()
+						);
+		}
+
+		cout << "Connection with ID of the input compressor station " + to_string(idIn) + ", ID of the pipe " + to_string(idPipe) + " and ID of the output compressor station " + to_string(idOut) + " has been successfully deleted!" << endl;
+
+		cout << "Update Graph (Compressor station -> Pipe -> Compressor station):" << endl;
+		for (int i = 0; i < graph.size(); ++i) {
+			cout << i << " -> ";
+			for (const auto& connection : graph[i]) {
+				cout << "(" << connection.inputStation << ", " << connection.pipe << ", " << connection.outputStation << ") ";
+			}
+			cout << endl;
+		}
+	}
+	else {
+		cout << "The connection was not found in the graph" << endl;
 	}
 }
