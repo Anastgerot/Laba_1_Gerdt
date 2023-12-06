@@ -12,8 +12,9 @@ int main()
 {
 	unordered_map<int, truba> pipe;
 	unordered_map<int, CS> ks;
-	vector<vector<int>> graph;
+	vector<vector<Connection>> graph(CS::max_id_cs + 1);
 	addition add;
+	vector<int> result;
 	redirect_output_wrapper cerr_out(cerr);
 	string time = format("{:%d_%m_%Y %H_%M_%OS}", system_clock::now() + hours(3));
 	ofstream logfile("log_" + time + ".txt");
@@ -30,9 +31,10 @@ int main()
 		cout << "5. Download" << endl;
 		cout << "6. Choose and Edit objects with the filter" << endl;
 		cout << "7. Connect the pipe and compressor station in the gas transmission network." << endl;
+		cout << "8. Delete connection from the graph" << endl;
 		cout << "0. Exit" << endl;
 		cout << "Selection: ";
-		choice = GetCorrectNumber(0, 7);
+		choice = GetCorrectNumber(0, 8);
 		switch (choice)
 		{
 		case 1:
@@ -51,10 +53,14 @@ int main()
 			add.Load_Download(pipe, ks);
 			break;
 		case 6:
-			add.Filter(pipe, ks);
+			add.Filter(pipe, ks, graph);
 			break;
 		case 7:
 			add.Connect_CS_and_Pipe(pipe, ks, graph);
+			result = add.topologicalSort(graph);
+			break;
+		case 8:
+			add.Remove_Connection(graph);
 			break;
 		case 0:
 			return 0;

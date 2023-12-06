@@ -2,21 +2,32 @@
 #include <iostream>
 #include <unordered_map>
 #include <set> 
+#include <functional>
+#include <stack>
 #include "truba.h"
 #include "CS.h"
 #include "Utils.h"
 using namespace std;
+struct Connection {
+    int inputStation;
+    int pipe;
+    int outputStation;
+};
 class addition
 {
 public:
-    static void Addpipe(unordered_map<int, truba>& pipe);
-    static void Addcs(unordered_map<int, CS>& ks);
-    static void Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
-    static vector<int> ParseIds(const string& input);
-    static void Viewall(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
-    static void Save_objects(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
-    static void Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks, vector<vector<int>>& graph);
-    static void Load_Download(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
-    static int Add_newpipe_connect(unordered_map<int, truba>& pipe, int diameter);
+    void Addpipe(unordered_map<int, truba>& pipe);
+    void Addcs(unordered_map<int, CS>& ks);
+    void Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks, vector<vector<Connection>>& graph);
+    void Viewall(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
+    void Save_objects(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
+    void Load_Download(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
+    int Add_newpipe_connect(unordered_map<int, truba>& pipe, int diameter);
+    void topologicalSortDFS(int vertex, const vector<vector<Connection>>& graph, vector<bool>& visited, vector<bool>& onPath, stack<int>& resultStack);
+    vector<int> topologicalSort(const vector<vector<Connection>>& graph);
+    void Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks, vector<vector<Connection>>& graph);
+    void Remove_Edge_And_Unused_Vertices(int pipeId, vector<vector<Connection>>& graph);
+    void Remove_Vertex(int vertex, vector<vector<Connection>>& graph);
+    void Remove_Connection(vector<vector<Connection>>& graph);
 };
 

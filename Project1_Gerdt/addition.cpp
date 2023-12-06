@@ -9,6 +9,8 @@
 #include "CS.h"
 #include "Utils.h"
 #include "addition.h"
+#include <unordered_set>
+#include <algorithm>
 using namespace std;
 void addition::Addpipe(unordered_map<int, truba>& pipe)
 {
@@ -21,19 +23,6 @@ void addition::Addcs(unordered_map<int, CS>& ks)
 	CS cs1;
 	cin >> cs1;
 	ks.insert({ cs1.get_idc(), cs1 });
-}
-vector<int> ParseIds(const string& input)
-{
-	vector<int> ids;
-	istringstream iss(input);
-	int id;
-
-	while (iss >> id)
-	{
-		ids.push_back(id);
-	}
-
-	return ids;
 }
 void addition::Viewall(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks)
 {
@@ -135,7 +124,7 @@ void addition::Load_Download(unordered_map<int, truba>& pipe, unordered_map<int,
 		fin.close();
 	}
 }
-void addition::Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) {
+void addition::Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks, vector<vector<Connection>>& graph) {
 	int choice;
 	string filter;
 	set<int> matching_pipes;
@@ -277,12 +266,18 @@ void addition::Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& k
 						}
 					}
 					else if (editAllChoice == 2) {
-						cin.ignore();
 						cout << "Enter pipe IDs to edit (separated by space): ";
 						string idInput;
+						int n;
+						set<int> idPipe;
+						cin >> ws;
 						getline(cin, idInput);
-						vector<int> ids = ParseIds(idInput);
-						for (int id : ids) {
+						istringstream iss(idInput);
+						while (iss >> n)
+						{
+							idPipe.insert(n);
+						}
+						for (int id : idPipe) {
 							auto pipe_iter = pipe.find(id);
 							if (pipe_iter != pipe.end()) {
 								pipe_iter->second.under_repair = !pipe_iter->second.under_repair;
@@ -317,12 +312,18 @@ void addition::Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& k
 						}
 					}
 					else if (editAllChoice == 2) {
-						cin.ignore();
 						cout << "Enter compressor station IDs to edit (separated by space): ";
 						string idInput;
+						int n;
+						set<int> idCS;
+						cin >> ws;
 						getline(cin, idInput);
-						vector<int> ids = ParseIds(idInput);
-						for (int id : ids) {
+						istringstream iss(idInput);
+						while (iss >> n)
+						{
+							idCS.insert(n);
+						}
+						for (int id : idCS) {
 							auto cs_iter = ks.find(id);
 							if (cs_iter != ks.end()) {
 								CS& cs = cs_iter->second;
@@ -351,21 +352,31 @@ void addition::Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& k
 							auto pipe_iter = pipe.find(id);
 							if (pipe_iter != pipe.end()) {
 								pipe.erase(pipe_iter);
+								Remove_Edge_And_Unused_Vertices(id, graph);
+
 							}
 						}
 						cout << "Pipes removed successfully.";
 						matching_pipes.clear();
 					}
 					else if (deleteChoice == 2) {
-						cin.ignore();
 						cout << "Enter pipe IDs to remove (separated by space): ";
 						string idInput;
+						int n;
+						set<int> idPipe;
+						cin >> ws;
 						getline(cin, idInput);
-						vector<int> ids = ParseIds(idInput);
-						for (int id : ids) {
+						istringstream iss(idInput);
+						while (iss >> n)
+						{
+							idPipe.insert(n);
+						}
+						for (int id : idPipe) {
 							auto pipe_iter = pipe.find(id);
 							if (pipe_iter != pipe.end()) {
 								pipe.erase(pipe_iter);
+								cout << "Pipe with id " + to_string(id) + " has been successfully deleted" << endl;
+								Remove_Edge_And_Unused_Vertices(id, graph);
 							}
 							else {
 								cout << "Pipe with ID " << to_string(id) << " not found.";
@@ -382,21 +393,34 @@ void addition::Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& k
 							auto cs_iter = ks.find(id);
 							if (cs_iter != ks.end()) {
 								ks.erase(cs_iter);
+								if (id < graph.size()) {
+									Remove_Vertex(id, graph);
+								}
 							}
 						}
 						cout << "Compressor stations removed successfully.";
 						matching_cs.clear();
 					}
 					else if (deleteChoice == 2) {
-						cin.ignore();
 						cout << "Enter compressor station IDs to remove (separated by space): ";
 						string idInput;
+						int n;
+						set<int> idCS;
+						cin >> ws;
 						getline(cin, idInput);
-						vector<int> ids = ParseIds(idInput);
-						for (int id : ids) {
+						istringstream iss(idInput);
+						while (iss >> n)
+						{
+							idCS.insert(n);
+						}
+						for (int id : idCS) {
 							auto cs_iter = ks.find(id);
 							if (cs_iter != ks.end()) {
 								ks.erase(cs_iter);
+								cout << "Compressor station with id " + to_string(id) + " has been successfully deleted" << endl;
+								if (id < graph.size()) {
+									Remove_Vertex(id, graph);
+								}
 							}
 							else {
 								cout << "Compressor station with ID " << to_string(id) << " not found.";
@@ -417,10 +441,6 @@ void addition::Filter(unordered_map<int, truba>& pipe, unordered_map<int, CS>& k
 		}
 	}
 }
-vector<int> addition::ParseIds(const string& input)
-{
-	return vector<int>();
-}
 int addition::Add_newpipe_connect(unordered_map<int, truba>& pipe, int diameter) {
 	truba tr1;
 	cin >> tr1;
@@ -433,7 +453,7 @@ int addition::Add_newpipe_connect(unordered_map<int, truba>& pipe, int diameter)
 	pipe.insert({ new_pipe_id, tr1 });
 	return new_pipe_id;
 }
-void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks, vector<vector<int>>& graph) {
+void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks, vector<vector<Connection>>& graph) {
 	int idIn, idOut, diameter;
 	cout << "Enter the ID of the input compressor station: ";
 	idIn = GetCorrectNumber(0, CS::max_id_cs);
@@ -441,6 +461,7 @@ void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_ma
 		cout << "Input compressor station not found. Aborting connection." << endl;
 		return;
 	}
+
 	int maxId = idIn;
 	if (maxId >= graph.size()) {
 		graph.resize(maxId + 1);
@@ -468,7 +489,6 @@ void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_ma
 		return;
 	}
 
-
 	cout << "Enter the diameter of the pipe: ";
 	diameter = GetCorrectNumber(500, 1400);
 	while (!(diameter == 500 || diameter == 700 || diameter == 1000 || diameter == 1400)) {
@@ -481,9 +501,9 @@ void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_ma
 		const truba& tr = pipe_entry.second;
 		if (!tr.under_repair && tr.diameter == diameter) {
 			bool isPipeConnected = false;
-			for (const auto& connected_pipes: graph) {
-				for (int connected_pipe_id : connected_pipes) {
-					if (connected_pipe_id == pipe_entry.first) {
+			for (const auto& connection : graph) {
+				for (const auto& conn : connection) {
+					if (conn.pipe == pipe_entry.first) {
 						isPipeConnected = true;
 						break;
 					}
@@ -511,15 +531,141 @@ void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_ma
 		return;
 	}
 
-	graph[idIn].push_back(available_pipe_id);
-	graph[idOut].push_back(available_pipe_id);
+	Connection newConnection = { idIn, available_pipe_id, idOut };
+	graph[idIn].push_back(newConnection);
+	graph[idOut].push_back(newConnection);
 	cout << "Successfully connected compressor stations " << idIn << " and " << idOut << " with pipe " << available_pipe_id << endl;
 
-	cout << "Graph (Compressor station -> Pipe):" << endl;
+
+	cout << "Graph (Compressor station -> Pipe -> Compressor station):" << endl;
 	for (int i = 0; i < graph.size(); ++i) {
 		cout << i << " -> ";
-		for (const auto& pipe : graph[i]) {
-			cout << pipe << " ";
+		for (const auto& connection : graph[i]) {
+			cout << "(" << connection.inputStation << ", " << connection.pipe << ", " << connection.outputStation << ") ";
+		}
+		cout << endl;
+	}
+}
+void addition::topologicalSortDFS(int vertex, const vector<vector<Connection>>& graph, vector<bool>& visited, vector<bool>& onPath, stack<int>& resultStack) {
+	if (vertex >= graph.size() || graph[vertex].empty()) {
+		return;
+	}
+
+	visited[vertex] = true;
+	onPath[vertex] = true; 
+
+	for (const auto& connection : graph[vertex]) {
+		int nextVertex = connection.outputStation;
+		if (!visited[nextVertex]) {
+			topologicalSortDFS(nextVertex, graph, visited, onPath, resultStack);
+		}
+	}
+
+	resultStack.push(vertex);
+	onPath[vertex] = false;
+}
+vector<int> addition::topologicalSort(const vector<vector<Connection>>& graph) {
+	if (graph.empty()) {
+		cout << "Error: Graph is empty!" << endl;
+		return vector<int>();  
+	}
+
+	vector<int> result;
+	vector<bool> visited(graph.size(), false);
+	vector<bool> onPath(graph.size(), false);
+
+	stack<int> resultStack;
+
+	for (int i = 0; i < graph.size(); ++i) {
+		if (!visited[i]) {
+			topologicalSortDFS(i, graph, visited, onPath, resultStack);
+		}
+	}
+
+	while (!resultStack.empty()) {
+		result.push_back(resultStack.top());
+		resultStack.pop();
+	}
+	cout << "Topological Order: ";
+	for (int vertex : result) {
+		cout << vertex << " ";
+	}
+	return result;
+}
+void addition::Remove_Vertex(int vertex, vector<vector<Connection>>& graph) {
+	if (vertex >= graph.size()) {
+		cout << "Error: Vertex " << vertex << " not found." << endl;
+		return;
+	}
+
+	graph[vertex].clear();
+
+	for (auto& connections : graph) {
+		connections.erase(
+			remove_if(connections.begin(), connections.end(), [vertex](const Connection& conn) {
+				return conn.inputStation == vertex || conn.outputStation == vertex;
+				}),
+			connections.end()
+		);
+	}
+
+	cout << "Vertex " << vertex << " and its connections removed successfully." << endl;
+
+	cout << "Update Graph (Compressor station -> Pipe -> Compressor station):" << endl;
+	for (int i = 0; i < graph.size(); ++i) {
+		cout << i << " -> ";
+		for (const auto& connection : graph[i]) {
+			cout << "(" << connection.inputStation << ", " << connection.pipe << ", " << connection.outputStation << ") ";
+		}
+		cout << endl;
+	}
+}
+void addition::Remove_Edge_And_Unused_Vertices(int pipeId, vector<vector<Connection>>& graph) {
+
+	for (auto& connections : graph) {
+		connections.erase(
+			remove_if(connections.begin(), connections.end(), [pipeId](const Connection& conn) {
+				return conn.pipe == pipeId;
+				}),
+			connections.end()
+		);
+	}
+
+	cout << "Pipe " << pipeId << " and its connections removed successfully." << endl;
+
+	cout << "Update Graph (Compressor station -> Pipe -> Compressor station):" << endl;
+	for (int i = 0; i < graph.size(); ++i) {
+		cout << i << " -> ";
+		for (const auto& connection : graph[i]) {
+			cout << "(" << connection.inputStation << ", " << connection.pipe << ", " << connection.outputStation << ") ";
+		}
+		cout << endl;
+	}
+}
+void addition::Remove_Connection(vector<vector<Connection>>& graph){
+	int idIn, idOut, idPipe;
+	cout << "Enter the ID of the input compressor station: ";
+	idIn = GetCorrectNumber(0, CS::max_id_cs);
+	cout << "Enter the ID of the output compressor station: ";
+	idOut = GetCorrectNumber(0, CS::max_id_cs);
+	cout << "Enter the ID of the pipe: ";
+	idPipe = GetCorrectNumber(0, truba::max_id_truba);
+
+	for (auto& connections : graph) {
+		connections.erase(
+			remove_if(connections.begin(), connections.end(), [idPipe](const Connection& conn) {
+				return conn.pipe == idPipe;
+				}), connections.end()
+		);
+	}
+
+	cout << "Connection with ID of the input compressor station " +  to_string(idIn) + ", ID of the pipe  " + to_string(idIn) + " and  ID of the output compressor station" + to_string(idOut) + " has been successfully deleted" << endl;
+
+	cout << "Update Graph (Compressor station -> Pipe -> Compressor station):" << endl;
+	for (int i = 0; i < graph.size(); ++i) {
+		cout << i << " -> ";
+		for (const auto& connection : graph[i]) {
+			cout << "(" << connection.inputStation << ", " << connection.pipe << ", " << connection.outputStation << ") ";
 		}
 		cout << endl;
 	}

@@ -1,10 +1,10 @@
-5 3
+5 6
 Pipe:
 0
 pipe 1
 54
 500
-1
+0
 Pipe:
 1
 pipe 33
@@ -28,7 +28,7 @@ Pipe:
 ugi
 67
 700
-1
+0
 Compressor station:
 0
 cs
@@ -47,3 +47,21 @@ gh
 43
 4
 A
+Compressor station:
+3
+cs 4 
+54
+43
+A
+Compressor station:
+4
+cs 5
+56
+43
+D
+Compressor station:
+5
+new cs
+67
+5
+D
