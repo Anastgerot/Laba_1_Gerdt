@@ -29,12 +29,13 @@ public:
     void Load_Download(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks);
     int Add_newpipe_connect(unordered_map<int, truba>& pipe, int diameter);
 
-    bool DFS(int v, vector<vector<Connection>>& graph, unordered_set<int>& visited, unordered_set<int>& recStack, stack<int>& result);
-    vector<int> TopologicalSort(vector<vector<Connection>>& graph);
-
     void Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks, vector<vector<Connection>>& graph);
     void Remove_Edge_And_Unused_Vertices(int pipeId, vector<vector<Connection>>& graph);
     void Remove_Vertex(int vertex, vector<vector<Connection>>& graph);
     void Remove_Connection(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks, vector<vector<Connection>>& graph);
+
+    bool DFS(int v, vector<vector<Connection>>& graph, unordered_set<int>& visited, unordered_set<int>& recStack, stack<int>& result);
+    vector<int> TopologicalSort(vector<vector<Connection>>& graph);
+
 };
 

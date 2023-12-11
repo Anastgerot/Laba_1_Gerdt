@@ -456,6 +456,7 @@ int addition::Add_newpipe_connect(unordered_map<int, truba>& pipe, int diameter)
 }
 void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks, vector<vector<Connection>>& graph) {
 	int idIn, idOut, diameter;
+	int countConnections = 0;
 	cout << "Enter the ID of the input compressor station: ";
 	idIn = GetCorrectNumber(0, CS::max_id_cs);
 	if (ks.find(idIn) == ks.end()) {
@@ -466,11 +467,6 @@ void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_ma
 	int maxId = idIn;
 	if (maxId >= graph.size()) {
 		graph.resize(maxId + 1);
-	}
-
-	if (graph[idIn].size() >= 2) {
-		cout << "Input compressor station already has the maximum number of connections (2). Aborting connection." << endl;
-		return;
 	}
 
 	cout << "Enter the ID of the output compressor station: ";
@@ -485,8 +481,8 @@ void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_ma
 		graph.resize(maxId + 1);
 	}
 
-	if (graph[idOut].size() >= 2) {
-		cout << "Output compressor station already has the maximum number of connections (2). Aborting connection." << endl;
+	if (idIn == idOut) {
+		cout << "Error: Cannot connect a compressor station to itself. Aborting connection." << endl;
 		return;
 	}
 
@@ -535,6 +531,41 @@ void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_ma
 
 	Connection newConnection = { idIn, available_pipe_id, idOut };
 	graph[idIn].push_back(newConnection);
+
+
+	for (int i = 0; i < graph.size(); i++) {
+		for (const auto& connection : graph[i]) {
+			if (connection.inputStation == idOut || connection.outputStation == idOut) {
+				countConnections++;
+			}
+			else if (connection.inputStation == idIn || connection.outputStation == idIn) {
+				countConnections++;
+			}
+		}
+	}
+
+	if (countConnections > 2) {
+		cout << "Error: Compressor station " << idIn << " or " << idOut << " is already connected to two compressor stations. Aborting connection." << endl;
+
+		for (int i = 0; i < graph.size(); i++) {
+			auto& connections = graph[i];
+			for (auto it = connections.begin(); it != connections.end(); ++it) {
+				const auto& connection = *it;
+				if (connection.inputStation == idIn && connection.outputStation == idOut) {
+					it = connections.erase(it);
+					break;
+				}
+				else if (connection.inputStation == idOut && connection.outputStation == idIn) {
+					it = connections.erase(it);
+					break;
+				}
+			}
+		}
+
+		countConnections = 0;
+		return;
+	}
+
 	cout << "Successfully connected compressor stations " << idIn << " and " << idOut << " with pipe " << available_pipe_id << endl;
 
 
@@ -547,6 +578,7 @@ void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_ma
 		cout << endl;
 	}
 }
+
 bool addition::DFS(int v, vector<vector<Connection>>& graph, unordered_set<int>& visited, unordered_set<int>& recStack, stack<int>& result) {
 	visited.insert(v);
 	recStack.insert(v);
@@ -554,7 +586,7 @@ bool addition::DFS(int v, vector<vector<Connection>>& graph, unordered_set<int>&
 	for (const auto& connection : graph[v]) {
 		if (visited.find(connection.outputStation) == visited.end()) {
 			if (DFS(connection.outputStation, graph, visited, recStack, result)) {
-				return true; 
+				return true;
 			}
 		}
 		else if (recStack.find(connection.outputStation) != recStack.end()) {
@@ -563,19 +595,23 @@ bool addition::DFS(int v, vector<vector<Connection>>& graph, unordered_set<int>&
 	}
 
 	recStack.erase(v);
-	result.push(v);
+	for (const auto& connection : graph[v]) {
+		result.push(connection.inputStation);
+		result.push(connection.outputStation);
+	}
 	return false;
 }
+
 vector<int> addition::TopologicalSort(vector<vector<Connection>>& graph) {
 	stack<int> result;
 	unordered_set<int> visited;
-	unordered_set<int> recStack; 
+	unordered_set<int> recStack;
 
 	for (int i = 0; i < graph.size(); ++i) {
 		if (visited.find(i) == visited.end()) {
 			if (DFS(i, graph, visited, recStack, result)) {
 				cout << "Error: The graph contains a cycle. Topological sorting is not possible." << endl;
-				return {}; 
+				return {};
 			}
 		}
 	}
@@ -596,6 +632,7 @@ vector<int> addition::TopologicalSort(vector<vector<Connection>>& graph) {
 
 	return sortedResult;
 }
+
 void addition::Remove_Vertex(int vertex, vector<vector<Connection>>& graph) {
 	if (vertex >= graph.size()) {
 		cout << "Error: Vertex " << vertex << " not found." << endl;
