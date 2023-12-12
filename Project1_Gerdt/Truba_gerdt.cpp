@@ -14,7 +14,6 @@ int main()
 	unordered_map<int, CS> ks;
 	vector<vector<Connection>> graph(CS::max_id_cs + 1);
 	addition add;
-	vector<int> result;
 	redirect_output_wrapper cerr_out(cerr);
 	string time = format("{:%d_%m_%Y %H_%M_%OS}", system_clock::now() + hours(3));
 	ofstream logfile("log_" + time + ".txt");
@@ -57,7 +56,7 @@ int main()
 			break;
 		case 7:
 			add.Connect_CS_and_Pipe(pipe, ks, graph);
-			result = add.TopologicalSort(graph);
+			add.Topological_sort(graph);
 			break;
 		case 8:
 			add.Remove_Connection(pipe, ks, graph);

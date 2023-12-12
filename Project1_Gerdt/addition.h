@@ -34,8 +34,9 @@ public:
     void Remove_Vertex(int vertex, vector<vector<Connection>>& graph);
     void Remove_Connection(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks, vector<vector<Connection>>& graph);
 
-    bool DFS(int v, vector<vector<Connection>>& graph, unordered_set<int>& visited, unordered_set<int>& recStack, stack<int>& result);
-    vector<int> TopologicalSort(vector<vector<Connection>>& graph);
+    bool DFS(int v, const vector<vector<Connection>>& graph, vector<bool>& visited, vector<int>& result, unordered_set<int>& currentPath);
+    void Topological_sort(vector<vector<Connection>>& graph);
+
 
 };
 

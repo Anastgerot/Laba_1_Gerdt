@@ -579,58 +579,68 @@ void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_ma
 	}
 }
 
-bool addition::DFS(int v, vector<vector<Connection>>& graph, unordered_set<int>& visited, unordered_set<int>& recStack, stack<int>& result) {
-	visited.insert(v);
-	recStack.insert(v);
 
-	for (const auto& connection : graph[v]) {
-		if (visited.find(connection.outputStation) == visited.end()) {
-			if (DFS(connection.outputStation, graph, visited, recStack, result)) {
-				return true;
+bool addition::DFS(int v, const vector<vector<Connection>>& graph, vector<bool>& visited, vector<int>& result, unordered_set<int>& currentPath) {
+	visited[v] = true;
+	currentPath.insert(v);
+	for (const Connection& conn : graph[v]) {
+		cout << v;
+		if (currentPath.find(conn.outputStation) != currentPath.end()) {
+			cout << "Graph has a cycle." << endl;
+			return false; 
+		}
+		if (!visited[conn.outputStation]) {
+			if (!DFS(conn.outputStation, graph, visited, result, currentPath)) {
+				return false;
 			}
 		}
-		else if (recStack.find(connection.outputStation) != recStack.end()) {
-			return true;
-		}
 	}
-
-	recStack.erase(v);
-	for (const auto& connection : graph[v]) {
-		result.push(connection.inputStation);
-		result.push(connection.outputStation);
-	}
-	return false;
+	currentPath.erase(v);
+	result.push_back(v);
+	return true;
 }
 
-vector<int> addition::TopologicalSort(vector<vector<Connection>>& graph) {
-	stack<int> result;
-	unordered_set<int> visited;
-	unordered_set<int> recStack;
+void addition::Topological_sort(vector<vector<Connection>>& graph)
+{
+	int numVertices = graph.size();
+	vector<bool> visited(numVertices, false);
+	vector<int> result; 
+	unordered_set<int> currentPath;
 
-	for (int i = 0; i < graph.size(); ++i) {
-		if (visited.find(i) == visited.end()) {
-			if (DFS(i, graph, visited, recStack, result)) {
-				cout << "Error: The graph contains a cycle. Topological sorting is not possible." << endl;
-				return {};
+	for (int i = numVertices - 1; i >= 0; --i) {
+		cout << i;
+		if (!visited[i]) {
+			if (!DFS(i, graph, visited, result, currentPath)) {
+				return;
 			}
 		}
 	}
 
-	vector<int> sortedResult;
-	while (!result.empty()) {
-		sortedResult.push_back(result.top());
-		result.pop();
-	}
-
-	if (!sortedResult.empty()) {
-		cout << "Topological Order: ";
-		for (int node : sortedResult) {
-			cout << node << " ";
+	vector<int> stations;
+	for (int i = 0; i < graph.size(); i++) {
+		for (auto& connections : graph[i]) {
+			int firstElement = connections.inputStation;
+			int thirdElement = connections.outputStation;
+			if (find(stations.begin(), stations.end(), firstElement) == stations.end())
+				stations.push_back(firstElement);
+			if (find(stations.begin(), stations.end(), thirdElement) == stations.end())
+				stations.push_back(thirdElement);
 		}
-		cout << endl;
 	}
 
-	return sortedResult;
+	result.erase(
+		std::remove_if(result.begin(), result.end(), [&](int station) {
+			return find(stations.begin(), stations.end(), station) == stations.end();
+			}),
+		result.end()
+	);
+
+
+	cout << "Topological order: ";
+	for (int i = result.size() - 1; i >= 0; --i) {
+		cout << result[i] << " ";
+	}
+	cout << endl;
 }
 
 void addition::Remove_Vertex(int vertex, vector<vector<Connection>>& graph) {
