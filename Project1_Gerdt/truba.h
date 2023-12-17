@@ -3,10 +3,9 @@
 using namespace std;
 class truba
 {
-private:
+public:
 	int idpipe = 0;
 	double length = 0;
-public:
 	string name = "";
 	bool under_repair = false;
 	int diameter = 0;

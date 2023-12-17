@@ -30,7 +30,7 @@ int main()
 		cout << "5. Download" << endl;
 		cout << "6. Choose and Edit objects with the filter" << endl;
 		cout << "7. Connect the pipe and compressor station in the gas transmission network." << endl;
-		cout << "8. Delete connection from the graph" << endl;
+		cout << "8. Choose operation with the graph" << endl;
 		cout << "0. Exit" << endl;
 		cout << "Selection: ";
 		choice = GetCorrectNumber(0, 8);
@@ -56,10 +56,10 @@ int main()
 			break;
 		case 7:
 			add.Connect_CS_and_Pipe(pipe, ks, graph);
-			add.Topological_sort(graph);
+			add.FindAndPrintCapacities(graph, pipe);
 			break;
 		case 8:
-			add.Remove_Connection(pipe, ks, graph);
+			add.Operations_with_graph(pipe, ks, graph);
 			break;
 		case 0:
 			return 0;

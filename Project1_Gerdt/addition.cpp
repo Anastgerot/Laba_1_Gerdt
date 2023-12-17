@@ -1,8 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cmath>
 #include <unordered_map>
 #include <unordered_set>
+#include <queue>
 #include <set>
 #include <sstream>
 #include <vector>
@@ -454,6 +456,21 @@ int addition::Add_newpipe_connect(unordered_map<int, truba>& pipe, int diameter)
 	pipe.insert({ new_pipe_id, tr1 });
 	return new_pipe_id;
 }
+
+bool addition::IsConnectedToTwoCompressorStations(const vector<vector<Connection>>& graph, int stationId) {
+	int countConnections = 0;
+	for (const auto& connections : graph) {
+		for (const auto& connection : connections) {
+			if (connection.inputStation == stationId || connection.outputStation == stationId) {
+				countConnections++;
+				if (countConnections > 2) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
 void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks, vector<vector<Connection>>& graph) {
 	int idIn, idOut, diameter;
 	int countConnections = 0;
@@ -532,37 +549,21 @@ void addition::Connect_CS_and_Pipe(unordered_map<int, truba>& pipe, unordered_ma
 	Connection newConnection = { idIn, available_pipe_id, idOut };
 	graph[idIn].push_back(newConnection);
 
-
-	for (int i = 0; i < graph.size(); i++) {
-		for (const auto& connection : graph[i]) {
-			if (connection.inputStation == idOut || connection.outputStation == idOut) {
-				countConnections++;
-			}
-			else if (connection.inputStation == idIn || connection.outputStation == idIn) {
-				countConnections++;
-			}
-		}
-	}
-
-	if (countConnections > 2) {
+	if (IsConnectedToTwoCompressorStations(graph, idIn) || IsConnectedToTwoCompressorStations(graph, idOut)) {
 		cout << "Error: Compressor station " << idIn << " or " << idOut << " is already connected to two compressor stations. Aborting connection." << endl;
 
-		for (int i = 0; i < graph.size(); i++) {
-			auto& connections = graph[i];
+		for (auto& connections : graph) {
 			for (auto it = connections.begin(); it != connections.end(); ++it) {
 				const auto& connection = *it;
-				if (connection.inputStation == idIn && connection.outputStation == idOut) {
+				if ((connection.inputStation == idIn && connection.outputStation == idOut) ||
+					(connection.inputStation == idOut && connection.outputStation == idIn)) {
 					it = connections.erase(it);
-					break;
-				}
-				else if (connection.inputStation == idOut && connection.outputStation == idIn) {
-					it = connections.erase(it);
+					--it;  
 					break;
 				}
 			}
 		}
 
-		countConnections = 0;
 		return;
 	}
 
@@ -584,7 +585,6 @@ bool addition::DFS(int v, const vector<vector<Connection>>& graph, vector<bool>&
 	visited[v] = true;
 	currentPath.insert(v);
 	for (const Connection& conn : graph[v]) {
-		cout << v;
 		if (currentPath.find(conn.outputStation) != currentPath.end()) {
 			cout << "Graph has a cycle." << endl;
 			return false; 
@@ -599,7 +599,6 @@ bool addition::DFS(int v, const vector<vector<Connection>>& graph, vector<bool>&
 	result.push_back(v);
 	return true;
 }
-
 void addition::Topological_sort(vector<vector<Connection>>& graph)
 {
 	int numVertices = graph.size();
@@ -608,7 +607,6 @@ void addition::Topological_sort(vector<vector<Connection>>& graph)
 	unordered_set<int> currentPath;
 
 	for (int i = numVertices - 1; i >= 0; --i) {
-		cout << i;
 		if (!visited[i]) {
 			if (!DFS(i, graph, visited, result, currentPath)) {
 				return;
@@ -629,7 +627,7 @@ void addition::Topological_sort(vector<vector<Connection>>& graph)
 	}
 
 	result.erase(
-		std::remove_if(result.begin(), result.end(), [&](int station) {
+		remove_if(result.begin(), result.end(), [&](int station) {
 			return find(stations.begin(), stations.end(), station) == stations.end();
 			}),
 		result.end()
@@ -749,5 +747,176 @@ void addition::Remove_Connection(unordered_map<int, truba>& pipe, unordered_map<
 	}
 	else {
 		cout << "The connection was not found in the graph" << endl;
+	}
+}
+
+void addition::Dikstra(unordered_map<int, truba>& pipe, const vector<vector<Connection>>& graph, unordered_map<int, CS>& ks) {
+	truba tr;
+	int n = graph.size();
+	int start, end;
+	cout << "Enter the start vertex id: ";
+	cin >> start;
+	if (ks.find(start) == ks.end()) {
+		cout << "Input compressor station not found. Aborting connection." << endl;
+		return;
+	}
+	cout << "Enter the end vertex id: ";
+	cin >> end;
+	if (ks.find(end) == ks.end()) {
+		cout << "Input compressor station not found. Aborting connection." << endl;
+		return;
+	}
+	vector<double> distance(n, INT_MAX); 
+	distance[start] = 0; 
+
+	priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+	pq.push({ 0, start });
+
+	while (!pq.empty()) {
+		int u = pq.top().second;
+		pq.pop();
+
+		for (const auto& connection : graph[u]) {
+			int v = connection.outputStation;
+			double weight = 0;
+			for (const auto& tr : pipe) {
+				if (tr.second.idpipe == connection.pipe)
+					weight = tr.second.length;
+			}
+			if (distance[u] + weight < distance[v]) {
+				distance[v] = distance[u] + weight;
+				pq.push({ distance[v], v });
+			}
+		}
+	}
+
+	if (distance[end] != 2147483647)
+		cout << "The shortest distance from vertex " << start << " to vertex " << end << ": " << distance[end] << endl;
+	else
+		cout << "Maybe you want to find the shortest distance from " << end << " to " << start << "?";
+}
+
+
+double addition::CalculateCapacity(const truba& pipe) {
+	if (pipe.under_repair) {
+		return 0.0;
+	}
+	else {
+		return 0.1 * sqrt(pow(pipe.diameter, 5) / pipe.length);
+	}
+}
+void addition::FindAndPrintCapacities(vector<vector<Connection>>& graph, unordered_map<int, truba>& pipe) {
+	cout << "Capacities for each Pipe:" << endl;
+
+	for (const auto& connections : graph) {
+		for (const auto& connection : connections) {
+			int pipeId = connection.pipe;
+			double pipeCapacity = CalculateCapacity(pipe[pipeId]);
+
+			cout << "Pipe " << pipeId << ": Capacity = " <<  pipeCapacity << endl;
+		}
+	}
+}
+
+double addition::FordFulkerson(vector<vector<Connection>>& graph, unordered_map<int, truba>& pipe, int source, int sink) {
+	vector<vector<double>> residual(graph.size(), vector<double>(graph.size(), 0.0));
+
+	for (int i = 0; i < graph.size(); ++i) {
+		for (const auto& connection : graph[i]) {
+			residual[i][connection.outputStation] = CalculateCapacity(pipe[connection.pipe]);
+		}
+	}
+
+	double maxFlow = 0.0;
+
+	while (true) {
+		vector<int> parent(graph.size(), -1);
+		queue<pair<int, double>> q;
+		q.push({ source, INT_MAX });
+
+		while (!q.empty()) {
+			int current = q.front().first;
+			double capacity = q.front().second;
+			q.pop();
+
+			for (const auto& connection : graph[current]) {
+				int next = connection.outputStation;
+				double residualCapacity = residual[current][next];
+
+				if (parent[next] == -1 && residualCapacity > 0) {
+					parent[next] = current;
+					double minCapacity = min(capacity, residualCapacity);
+					q.push({ next, minCapacity });
+
+					if (next == sink) {
+						maxFlow += minCapacity;
+
+						int u = next;
+						while (u != source) {
+							int v = parent[u];
+							residual[v][u] -= minCapacity;
+							residual[u][v] += minCapacity;
+							u = v;
+						}
+
+						break;
+					}
+				}
+			}
+		}
+
+		if (parent[sink] == -1) {
+			break;
+		}
+	}
+
+	return maxFlow;
+}
+void addition::FindAndPrintMaxFlow(vector<vector<Connection>>& graph, unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks) {
+	int source, sink;
+	cout << "Enter the source vertex id: ";
+	cin >> source;
+	if (ks.find(source) == ks.end()) {
+		cout << "Input compressor station not found. Aborting connection." << endl;
+		return;
+	}
+	cout << "Enter the sink vertex id: ";
+	cin >> sink;
+	if (ks.find(sink) == ks.end()) {
+		cout << "Input compressor station not found. Aborting connection." << endl;
+		return;
+	}
+	double maxFlow = FordFulkerson(graph, pipe, source, sink);
+	cout << "Max Flow: " << maxFlow << endl;
+}
+
+
+
+void addition::Operations_with_graph(unordered_map<int, truba>& pipe, unordered_map<int, CS>& ks, vector<vector<Connection>>& graph) {
+	while (true) {
+		cout << "Choose the number: " << endl;
+		cout << "1. Delete connection from the graph" << endl;
+		cout << "2. Topological sort" << endl;
+		cout << "3. The shortest length" << endl;
+		cout << "4. Maximum flow" << endl;
+		cout << "0. Exit" << endl;
+		cout << "Selection: ";
+		int choice = GetCorrectNumber(0, 4);
+		switch (choice) {
+		case 1:
+			Remove_Connection(pipe, ks, graph);
+			break;
+		case 2:
+			Topological_sort(graph);
+			break;
+		case 3:
+			Dikstra(pipe, graph, ks);
+			break;
+		case 4:
+			FindAndPrintMaxFlow(graph, pipe, ks);
+			break;
+		case 0:
+			return;
+		}
 	}
 }

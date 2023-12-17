@@ -1,33 +1,39 @@
-5 6
+6 6
 Pipe:
 0
 pipe 1
-54
+1
 500
 0
 Pipe:
 1
 pipe 33
-12
+10
 700
-1
+0
 Pipe:
 3
 pipe 12
-43
+4
 500
 0
 Pipe:
 4
 ppp
-34
+1
 500
 0
 Pipe:
 5
 ugi
-67
+1
 700
+0
+Pipe:
+6
+ugi2
+11
+500
 0
 Compressor station:
 0
